@@ -1,7 +1,6 @@
 ---
 layout: post
 title:  "Welcome to Jekyll!"
-author: Nan-Hung Hsieh
 date:   2014-09-27 23:16:53
 categories: jekyll update
 ---
