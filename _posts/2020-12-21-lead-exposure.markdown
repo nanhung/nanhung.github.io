@@ -7,7 +7,7 @@ categories: 鉛暴露
 
 [![](//raw.githubusercontent.com/nanhung/nanhung.github.io/master/img/lead-exposure.jpg)](//raw.githubusercontent.com/nanhung/nanhung.github.io/master/img/lead-exposure.jpg)
 
-美國環境保護局 (Environmental Protection Agency)今(12/21)[發布]((https://www.epa.gov/newsreleases/epa-issues-stronger-lead-regulations-protect-childrens-health-0?fbclid=IwAR0KwyC7k6zMvINhPd4PBnZfIgbLMlJqzff1QR0o_69iayW2HpQcjT2ASVo))了更新的環境中鉛塵的清除水平(clearance levels)，將過去所建議的管理濃度下修，主要目的是為了保護美國孩童受到鉛暴露的危害。這些鉛塵可能來自於環境中的剝落含鉛塗料。
+美國環境保護局 (Environmental Protection Agency)今(12/21)[發布](https://www.epa.gov/newsreleases/epa-issues-stronger-lead-regulations-protect-childrens-health-0?fbclid=IwAR0KwyC7k6zMvINhPd4PBnZfIgbLMlJqzff1QR0o_69iayW2HpQcjT2ASVo)了更新的環境中鉛塵的清除水平(clearance levels)，將過去所建議的管理濃度下修，主要目的是為了保護美國孩童受到鉛暴露的危害。這些鉛塵可能來自於環境中的剝落含鉛塗料。
 
 巧合的是，今年時代雜誌首次頒布的[年度封面兒童](https://time.com/5916772/kid-of-the-year-2020/)(Kid of the Year) - 拉歐(Gitanjali Rao)，她的一項成就即是發明水中鉛檢驗裝置，這項發明主要受到密西根州弗林特市(Flint)的飲用水公共衛生問題所啟發，也因為她的這項發明拉歐在2018年9月獲美國環保局頒發[President's Environmental Youth Award](https://www.epa.gov/education/presidents-environmental-youth-award-peya-2017-winners)。
 
