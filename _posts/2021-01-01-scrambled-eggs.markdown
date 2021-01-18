@@ -23,4 +23,6 @@ categories: Breakfast
 5. Scramble the eggs: Stir slowly with a rubber or silicone spatula.
 6. Turn off the fire when no more liquidous egg is running around the pan.
 
-**Level:** Easy // **Time:** 5-10 min // **Reference:**  [https://youtu.be/gdljrFBcTS4](https://youtu.be/gdljrFBcTS4) 
+Level: Easy  
+Time: 5-10 min  
+Reference: [https://youtu.be/gdljrFBcTS4](https://youtu.be/gdljrFBcTS4) 
