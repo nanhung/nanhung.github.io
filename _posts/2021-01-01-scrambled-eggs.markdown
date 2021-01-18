@@ -7,6 +7,7 @@ categories: Breakfast
 
 [![](//raw.githubusercontent.com/nanhung/nanhung.github.io/master/img/lead-exposure.jpg)](//raw.githubusercontent.com/nanhung/nanhung.github.io/master/img/lead-exposure.jpg)
 
+### Materials: 
 - 10g unsalted butter
 - 3 eggs
 - 3 T milk
@@ -14,6 +15,7 @@ categories: Breakfast
 - Salt
 - Green onion
 
+### Steps
 1. Crack eggs into a large bowl.
 2. Use a fork to mix eggs, milk, pepper, green onion, and salt together.
 3. Put unsalted butter on the non-stick pan.
@@ -21,6 +23,6 @@ categories: Breakfast
 5. Scramble the eggs: Stir slowly with a rubber or silicone spatula.
 6. Turn off the fire when no more liquidous egg is running around the pan.
 
-Level: Easy
-Time: 10 min
-Source: https://youtu.be/gdljrFBcTS4
+*Level:* Easy 
+*Time:* 10 min 
+Source: [https://youtu.be/gdljrFBcTS4](https://youtu.be/gdljrFBcTS4) 
