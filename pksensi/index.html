@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Global Sensitivity Analysis in Physiologically Based Kinetic Modeling">
-<meta property="og:description" content="Applying the global sensitivity analysis workflow to investigate the parameter uncertainty and sensitivity in physiologically based kinetic (PK) models, especially the physiologically based pharmacokinetic/toxicokinetic model with multivariate outputs. The package also provides some functions to check the convergence and sensitivity of model parameters (Hsieh et al., 2018 &lt;doi:10.3389/fphar.2018.00588&gt;).   ">
+<meta property="og:description" content="Applying the global sensitivity analysis workflow to investigate the parameter uncertainty and sensitivity in physiologically based kinetic (PK) models, especially the physiologically based pharmacokinetic/toxicokinetic model with multivariate outputs. The package also provides some functions to check the convergence and sensitivity of model parameters. The workflow was first mentioned in Hsieh et al., (2018) &lt;doi:10.3389/fphar.2018.00588&gt;, then further refined (Hsieh et al., 2020 &lt;doi:10.1016/j.softx.2020.100609&gt;).   ">
 <meta property="og:image" content="/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -91,9 +91,10 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="pksensi" class="section level1">
+<div id="pksensi-" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
-<a href="#pksensi" class="anchor"></a>pksensi</h1></div>
+<a href="#pksensi-" class="anchor"></a>pksensi <img src="reference/figures/logo.png" height="200px" align="right">
+</h1></div>
 <!-- badges: start -->
 
 <p><strong>pksensi</strong> implements the global sensitivity analysis workflow to investigate the parameter uncertainty and sensitivity in physiologically based kinetic (PK) models, especially the physiologically based pharmacokinetic/toxicokinetic model with multivariate outputs. The package also provides some functions to check the convergence and sensitivity of model parameters.</p>
@@ -122,6 +123,7 @@
 <h2 class="hasAnchor">
 <a href="#workflow" class="anchor"></a>Workflow</h2>
 <p><img src="https://i.ibb.co/tqpDLrk/sensitivity-workflow.png"></p>
+<p><strong>Note:</strong> The parameter correlation (e.g., V<sub>max</sub> and K<sub>M</sub> in metabolism) might be an issue in the global sensitivity analysis. If you have experiment data, suggest using small datasets as a sample in Markov Chain Monte Carlo Simulation. Then, check correlation before conducting the sensitivity analysis. The issue will try to address in the future version.</p>
 </div>
 <div id="example" class="section level2">
 <h2 class="hasAnchor">
@@ -187,8 +189,8 @@
 <a href="#step-4-conduct-simulation-will-take-few-minutes-with-more-replications" class="anchor"></a>Step 4. Conduct simulation (will take few minutes with more replications)</h3>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/solve_fun.html">solve_fun</a></span><span class="op">(</span><span class="va">x</span>, time <span class="op">=</span> <span class="va">t</span>, func <span class="op">=</span> <span class="va">pbtk1cpt</span>, initState <span class="op">=</span> <span class="va">initState</span>, outnames <span class="op">=</span> <span class="va">outputs</span><span class="op">)</span>
-<span class="co">#&gt; Starting time: 2021-06-04 16:09:51</span>
-<span class="co">#&gt; Ending time: 2021-06-04 16:10:02</span></code></pre></div>
+<span class="co">#&gt; Starting time: 2021-06-17 11:47:17</span>
+<span class="co">#&gt; Ending time: 2021-06-17 11:47:23</span></code></pre></div>
 </div>
 <div id="step-5-uncertainty-analysis" class="section level3">
 <h3 class="hasAnchor">
@@ -305,12 +307,12 @@
 <ul class="list-unstyled">
 <li><a href="https://www.tidyverse.org/lifecycle/#experimental"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="lifecycle"></a></li>
 <li><a href="https://cran.r-project.org/package=pksensi"><img src="https://tinyverse.netlify.com/badge/pksensi" alt="Dependencies"></a></li>
-<li><a href="https://travis-ci.org/nanhung/pksensi"><img src="https://travis-ci.org/nanhung/pksensi.svg?branch=master" alt="Travis-CI Build Status"></a></li>
 <li><a href="https://ci.appveyor.com/project/nanhung/pksensi"><img src="https://ci.appveyor.com/api/projects/status/github/nanhung/pksensi?branch=master&amp;svg=true" alt="AppVeyor build status"></a></li>
-<li><a href="https://codecov.io/gh/nanhung/pksensi?branch=master"><img src="https://codecov.io/gh/nanhung/pksensi/branch/master/graph/badge.svg" alt="Coverage Status"></a></li>
 <li><a href="https://cran.r-project.org/package=pksensi"><img src="http://www.r-pkg.org/badges/version-last-release/pksensi" alt="CRAN_Status_Badge"></a></li>
 <li><a href="https://cran.r-project.org/package=pksensi"><img src="http://cranlogs.r-pkg.org/badges/pksensi" alt="CRAN_Download_Badge"></a></li>
 <li><a href="https://CRAN.R-project.org/package=pksensi"><img src="https://cranlogs.r-pkg.org/badges/grand-total/pksensi?color=orange" alt="Total Downloads"></a></li>
+<li><a href="https://codecov.io/gh/nanhung/pksensi?branch=master"><img src="https://codecov.io/gh/nanhung/pksensi/branch/master/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://github.com/nanhung/pksensi/actions"><img src="https://github.com/nanhung/pksensi/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
 </ul>
 </div>
 </div>
