@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pksensi</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.2</span>
       </span>
     </div>
 
@@ -234,7 +234,7 @@ To check convergence, be sure to conduct the replication in <code>rfast99</code>
     <p>The convergence of sensitivity indices for each parameter is using the approach proposed
 by Sarrazin et al. (2016).
 This method quantitatively assesses the convergence by computing the range of
-95% confidence intervals of the sensitivity indices for each parameter across all data points (time and outputs).
+95\<!-- % confidence intervals of the sensitivity indices for each parameter across all data points (time and outputs). -->
 Using the global approach based on the heatmap visualization combined with the index "cut-off,"
 can systematically distinguish between "influential" and "non-influential" parameters (Hsieh et al. 2018).</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
@@ -264,7 +264,7 @@ in physiologically-based pharmacokinetic modeling.
 
 <span class='va'>time</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/seq.html'>seq</a></span><span class='op'>(</span>from <span class='op'>=</span> <span class='fl'>0.25</span>, to <span class='op'>=</span> <span class='fl'>12.25</span>, by <span class='op'>=</span> <span class='fl'>0.5</span><span class='op'>)</span>
 <span class='va'>out</span> <span class='op'>&lt;-</span> <span class='fu'><a href='solve_fun.html'>solve_fun</a></span><span class='op'>(</span><span class='va'>x</span>, model <span class='op'>=</span> <span class='va'>FFPK</span>, time <span class='op'>=</span> <span class='va'>time</span>, vars <span class='op'>=</span> <span class='st'>"output"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='message'>Starting time: 2021-06-19 15:17:17</span></div><div class='output co'>#&gt; <span class='message'>Ending time: 2021-06-19 15:17:18</span></div><div class='input'>
+</div><div class='output co'>#&gt; <span class='message'>Starting time: 2021-07-07 11:07:42</span></div><div class='output co'>#&gt; <span class='message'>Ending time: 2021-07-07 11:07:43</span></div><div class='input'>
 
 <span class='co'># Check results of sensitivity measures</span>
 <span class='fu'>check</span><span class='op'>(</span><span class='va'>out</span><span class='op'>)</span>
@@ -296,8 +296,8 @@ in physiologically-based pharmacokinetic modeling.
 #&gt;  F KA V 
 #&gt; </div><div class='input'><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>out</span><span class='op'>)</span>
 </div><div class='img'><img src='check-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'>heat_check</span><span class='op'>(</span><span class='va'>out</span>, show.all <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='warning'>Warning: 'as.is' should be specified by the caller; using TRUE</span></div><div class='output co'>#&gt; <span class='warning'>Warning: 'as.is' should be specified by the caller; using TRUE</span></div><div class='output co'>#&gt; <span class='warning'>Warning: 'as.is' should be specified by the caller; using TRUE</span></div><div class='output co'>#&gt; <span class='warning'>Warning: 'as.is' should be specified by the caller; using TRUE</span></div><div class='output co'>#&gt; <span class='warning'>Warning: 'as.is' should be specified by the caller; using TRUE</span></div><div class='output co'>#&gt; <span class='warning'>Warning: 'as.is' should be specified by the caller; using TRUE</span></div><div class='output co'>#&gt; <span class='warning'>Warning: 'as.is' should be specified by the caller; using TRUE</span></div><div class='output co'>#&gt; <span class='warning'>Warning: 'as.is' should be specified by the caller; using TRUE</span></div><div class='output co'>#&gt; <span class='warning'>Warning: 'as.is' should be specified by the caller; using TRUE</span></div><div class='img'><img src='check-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'>heat_check</span><span class='op'>(</span><span class='va'>out</span>, index <span class='op'>=</span> <span class='st'>"CI"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span class='warning'>Warning: 'as.is' should be specified by the caller; using TRUE</span></div><div class='output co'>#&gt; <span class='warning'>Warning: 'as.is' should be specified by the caller; using TRUE</span></div><div class='output co'>#&gt; <span class='warning'>Warning: 'as.is' should be specified by the caller; using TRUE</span></div><div class='output co'>#&gt; <span class='warning'>Warning: 'as.is' should be specified by the caller; using TRUE</span></div><div class='output co'>#&gt; <span class='warning'>Warning: 'as.is' should be specified by the caller; using TRUE</span></div><div class='output co'>#&gt; <span class='warning'>Warning: 'as.is' should be specified by the caller; using TRUE</span></div><div class='output co'>#&gt; <span class='warning'>Warning: 'as.is' should be specified by the caller; using TRUE</span></div><div class='output co'>#&gt; <span class='warning'>Warning: 'as.is' should be specified by the caller; using TRUE</span></div><div class='output co'>#&gt; <span class='warning'>Warning: 'as.is' should be specified by the caller; using TRUE</span></div><div class='img'><img src='check-3.png' alt='' width='700' height='433' /></div><div class='input'>
+</div><div class='img'><img src='check-2.png' alt='' width='700' height='433' /></div><div class='input'><span class='fu'>heat_check</span><span class='op'>(</span><span class='va'>out</span>, index <span class='op'>=</span> <span class='st'>"CI"</span><span class='op'>)</span>
+</div><div class='img'><img src='check-3.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

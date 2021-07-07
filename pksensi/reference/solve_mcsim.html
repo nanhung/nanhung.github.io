@@ -81,7 +81,7 @@ through GNU MCSim." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pksensi</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.2</span>
       </span>
     </div>
 
@@ -162,7 +162,7 @@ through <span class="pkg">GNU MCSim</span>.</p>
   monte_carlo <span class='op'>=</span> <span class='cn'>NULL</span>,
   dist <span class='op'>=</span> <span class='cn'>NULL</span>,
   q.arg <span class='op'>=</span> <span class='cn'>NULL</span>,
-  parallel <span class='op'>=</span> <span class='cn'>FALSE</span>
+  parallel <span class='op'>=</span> <span class='fl'>1</span>
 <span class='op'>)</span>
 
 <span class='fu'>generate_infile</span><span class='op'>(</span>
@@ -248,7 +248,7 @@ through <span class="pkg">GNU MCSim</span>.</p>
     </tr>
     <tr>
       <th>parallel</th>
-      <td><p>a logical value to apply parallel computing to improve speed (currently can only run under 4 cores setting).</p></td>
+      <td><p>a numeric value to assign the number of cores in parallel computing (default is set to 1).</p></td>
     </tr>
     </table>
 

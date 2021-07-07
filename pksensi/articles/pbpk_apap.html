@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pksensi</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.2</span>
       </span>
     </div>
 
@@ -95,7 +95,7 @@
       <h1 data-toc-skip>Acetaminophen-PBPK model</h1>
                         <h4 class="author">Nan-Hung Hsieh</h4>
             
-            <h4 class="date">2021-06-19</h4>
+            <h4 class="date">2021-07-07</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/nanhung/pksensi/blob/master/vignettes/pbpk_apap.Rmd"><code>vignettes/pbpk_apap.Rmd</code></a></small>
       <div class="hidden name"><code>pbpk_apap.Rmd</code></div>
@@ -515,7 +515,7 @@ APAP-S clearance
 <pre><code>#&gt; [1] TRUE</code></pre>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/compile_model.html">compile_model</a></span><span class="op">(</span><span class="va">mName</span>, application <span class="op">=</span> <span class="st">"mcsim"</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; * Created executable file 'mcsim.pbpk_apap'.</code></pre>
+<pre><code>#&gt; * Created executable file 'mcsim.pbpk_apap.model.exe'.</code></pre>
 </div>
 <div id="define-the-parameter-and-its-distribution" class="section level2">
 <h2 class="hasAnchor">
@@ -573,10 +573,10 @@ APAP-S clearance
                    monte_carlo <span class="op">=</span> <span class="fl">1000</span>, dist <span class="op">=</span> <span class="va">dist</span>, q.arg <span class="op">=</span> <span class="va">q.arg</span>, 
                    time <span class="op">=</span> <span class="va">times</span>, condition <span class="op">=</span> <span class="va">conditions</span>, 
                    rtol <span class="op">=</span> <span class="fl">1e-7</span>, atol <span class="op">=</span> <span class="fl">1e-9</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; Starting time: 2021-06-19 15:17:26</code></pre>
+<pre><code>#&gt; Starting time: 2021-07-07 11:08:08</code></pre>
 <pre><code>#&gt; * Created input file "sim.in".</code></pre>
-<pre><code>#&gt; Execute: ./mcsim.pbpk_apap sim.in</code></pre>
-<pre><code>#&gt; Ending time: 2021-06-19 15:17:29</code></pre>
+<pre><code>#&gt; Execute: ./mcsim.pbpk_apap.model.exe sim.in</code></pre>
+<pre><code>#&gt; Ending time: 2021-07-07 11:08:11</code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span>, mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">4</span>,<span class="fl">1</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span>
 <span class="fu"><a href="../reference/pksim.html">pksim</a></span><span class="op">(</span><span class="va">out</span>, xlab <span class="op">=</span> <span class="st">"Time (h)"</span>, ylab <span class="op">=</span> <span class="st">"Conc. (ug/L)"</span>, main <span class="op">=</span> <span class="st">"APAP"</span><span class="op">)</span>
@@ -609,10 +609,10 @@ APAP-S clearance
                    vars <span class="op">=</span> <span class="va">vars</span>,
                    condition <span class="op">=</span> <span class="va">conditions</span>, 
                    rtol <span class="op">=</span> <span class="fl">1e-7</span>, atol <span class="op">=</span> <span class="fl">1e-9</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; Starting time: 2021-06-19 15:17:30</code></pre>
+<pre><code>#&gt; Starting time: 2021-07-07 11:08:12</code></pre>
 <pre><code>#&gt; * Created input file "sim.in".</code></pre>
-<pre><code>#&gt; Execute: ./mcsim.pbpk_apap sim.in</code></pre>
-<pre><code>#&gt; Ending time: 2021-06-19 15:23:07</code></pre>
+<pre><code>#&gt; Execute: ./mcsim.pbpk_apap.model.exe sim.in</code></pre>
+<pre><code>#&gt; Ending time: 2021-07-07 11:10:54</code></pre>
 </div>
 <div id="visualization-and-decision" class="section level2">
 <h2 class="hasAnchor">
@@ -624,62 +624,10 @@ APAP-S clearance
 <p>In addition, through using the <code>check</code>, the parameter with sensitivity and convergence indices over the given condition can be preliminary detected for all output variables. Based on our previous study, we proposed the heatmap visualization approach <code>heat_check</code> to distinguish “influential” and “non-influential” parameters with a “cut-off” point. Through the given argument <code>order</code>, we can select the specific order of sensitivity measurement that we’re interested in.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/check.html">heat_check</a></span><span class="op">(</span><span class="va">out</span>, order <span class="op">=</span> <span class="st">"total order"</span>, show.all <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; Warning in type.convert.default(X[[i]], ...): 'as.is' should be specified by the
-#&gt; caller; using TRUE
-
-#&gt; Warning in type.convert.default(X[[i]], ...): 'as.is' should be specified by the
-#&gt; caller; using TRUE
-
-#&gt; Warning in type.convert.default(X[[i]], ...): 'as.is' should be specified by the
-#&gt; caller; using TRUE
-
-#&gt; Warning in type.convert.default(X[[i]], ...): 'as.is' should be specified by the
-#&gt; caller; using TRUE
-
-#&gt; Warning in type.convert.default(X[[i]], ...): 'as.is' should be specified by the
-#&gt; caller; using TRUE
-
-#&gt; Warning in type.convert.default(X[[i]], ...): 'as.is' should be specified by the
-#&gt; caller; using TRUE
-
-#&gt; Warning in type.convert.default(X[[i]], ...): 'as.is' should be specified by the
-#&gt; caller; using TRUE
-
-#&gt; Warning in type.convert.default(X[[i]], ...): 'as.is' should be specified by the
-#&gt; caller; using TRUE
-
-#&gt; Warning in type.convert.default(X[[i]], ...): 'as.is' should be specified by the
-#&gt; caller; using TRUE</code></pre>
 <p><img src="pbpk_apap_files/figure-html/unnamed-chunk-12-1.png" width="90%" style="display: block; margin: auto;"></p>
 <p>In the default setting, the <code>heat_check</code> can only show the influential parameters. The argument <code>show.all</code> is used to show all results. Adding the <code>index = "CI"</code> in the function can further investigate the convergence index. Based on the current setting of sampling size, most parameters cannot reach the acceptable criteria of convergence. Therefore, a higher number of sampling is necessary. The sample size of convergence in the current PBPK model is 8,192 <span class="citation">(Hsieh et al. 2018)</span>. However, based on the current sample size we still can find 6 parameters that can be an important parameter for the plasma APAP concentration.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/check.html">heat_check</a></span><span class="op">(</span><span class="va">out</span>, index <span class="op">=</span> <span class="st">"CI"</span>, order <span class="op">=</span> <span class="st">"total order"</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; Warning in type.convert.default(X[[i]], ...): 'as.is' should be specified by the
-#&gt; caller; using TRUE
-
-#&gt; Warning in type.convert.default(X[[i]], ...): 'as.is' should be specified by the
-#&gt; caller; using TRUE
-
-#&gt; Warning in type.convert.default(X[[i]], ...): 'as.is' should be specified by the
-#&gt; caller; using TRUE
-
-#&gt; Warning in type.convert.default(X[[i]], ...): 'as.is' should be specified by the
-#&gt; caller; using TRUE
-
-#&gt; Warning in type.convert.default(X[[i]], ...): 'as.is' should be specified by the
-#&gt; caller; using TRUE
-
-#&gt; Warning in type.convert.default(X[[i]], ...): 'as.is' should be specified by the
-#&gt; caller; using TRUE
-
-#&gt; Warning in type.convert.default(X[[i]], ...): 'as.is' should be specified by the
-#&gt; caller; using TRUE
-
-#&gt; Warning in type.convert.default(X[[i]], ...): 'as.is' should be specified by the
-#&gt; caller; using TRUE
-
-#&gt; Warning in type.convert.default(X[[i]], ...): 'as.is' should be specified by the
-#&gt; caller; using TRUE</code></pre>
 <p><img src="pbpk_apap_files/figure-html/unnamed-chunk-13-1.png" width="90%" style="display: block; margin: auto;"></p>
 </div>
 <div id="references" class="section level2 unnumbered">
