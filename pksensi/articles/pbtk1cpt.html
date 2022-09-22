@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -38,23 +40,17 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">pksensi</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.2.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.2.3</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -74,7 +70,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/nanhung/pksensi/">
+  <a href="https://github.com/nanhung/pksensi/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -89,15 +85,15 @@
 
       
 
-      </header><script src="pbtk1cpt_files/header-attrs-2.8/header-attrs.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>One-compartment PK model</h1>
-                        <h4 class="author">Nan-Hung Hsieh</h4>
+                        <h4 data-toc-skip class="author">Nan-Hung Hsieh</h4>
             
-            <h4 class="date">2021-07-07</h4>
+            <h4 data-toc-skip class="date">2022-09-22</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/nanhung/pksensi/blob/master/vignettes/pbtk1cpt.Rmd"><code>vignettes/pbtk1cpt.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/nanhung/pksensi/blob/HEAD/vignettes/pbtk1cpt.Rmd" class="external-link"><code>vignettes/pbtk1cpt.Rmd</code></a></small>
       <div class="hidden name"><code>pbtk1cpt.Rmd</code></div>
 
     </div>
@@ -105,9 +101,9 @@
     
     
 <p>In this example, we use a generic, one-compartment PK model from <strong>httk</strong> package <span class="citation">(Pearce et al. 2017)</span> to demonstrate how <strong>pksensi</strong> can be applied to pharmacokinetic studies.</p>
-<div id="equations" class="section level2">
-<h2 class="hasAnchor">
-<a href="#equations" class="anchor"></a>Equations</h2>
+<div class="section level2">
+<h2 id="equations">Equations<a class="anchor" aria-label="anchor" href="#equations"></a>
+</h2>
 <p>The differential equations for the one-compartment PK model can be written as:</p>
 <p><span class="math display">\[\frac{dA_{gutlumen}}{dt} = -k_{gutabs} \cdot A_{gutlumen} + g(t)\]</span> <span class="math display">\[\frac{dC_{rest}}{dt} = \frac{k_{gutabs}}{V_{dist}}-k_{elim} \cdot C_{rest}\]</span></p>
 <p>where <span class="math inline">\(A_{gutlumen}\)</span> is the state variable that describes the quantity of compound in the gut lumen (mg) and <span class="math inline">\(A_{rest}\)</span> is the quantity of compound in rest of body and blood (mg). The parameter <span class="math inline">\(k_{gutabs}\)</span> is the absorption rate constant that describes the chemical absorption from the gut lumen into gut tissue through first-order processes (/h) and <span class="math inline">\(k_{elim}\)</span> is the elimination rate constant (/h), which is equal to the total clearance divided by the volume of distribution. The time-dependent function <span class="math inline">\(g(t)\)</span> is used to describe the oral dosing schedule.</p>
@@ -115,418 +111,414 @@
 <p><span class="math display">\[ C_{rest} = A_{rest} / V_{dist} \cdot BW\]</span></p>
 <p>where <span class="math inline">\(V_{dist}\)</span> is the volume of distribution (L/kg BW) and <span class="math inline">\(BW\)</span> is the body weight (kg). The <span class="math inline">\(C_{rest}\)</span> can also be seen as the chemical concentration in plasma that can be further used to compare with observed results in a pharmacokinetic experiment. The bioavailability is assumed to be 100% in this model.</p>
 </div>
-<div id="model-implementations-with-desolve-solving-engine" class="section level2">
-<h2 class="hasAnchor">
-<a href="#model-implementations-with-desolve-solving-engine" class="anchor"></a>Model implementations with <strong>deSolve</strong> solving engine</h2>
+<div class="section level2">
+<h2 id="model-implementations-with-desolve-solving-engine">Model implementations with <strong>deSolve</strong> solving engine<a class="anchor" aria-label="anchor" href="#model-implementations-with-desolve-solving-engine"></a>
+</h2>
 <p>To start, we implemented the one-compartment PK model in R. The <strong>pksensi</strong> allows users select the preferred method to solve the PK model, either with the <strong>deSolve</strong> <span class="citation">(Soetaert, Petzoldt, and Setzer 2010)</span> package or with <strong>GNU MCSim</strong> <span class="citation">(Bois and Maszle 1997)</span> through the compile function. This section will show how to conduct global SA with pure R and GNU MCSim model code.</p>
-<div id="pure-r-model-code" class="section level3">
-<h3 class="hasAnchor">
-<a href="#pure-r-model-code" class="anchor"></a>Pure R model code</h3>
+<div class="section level3">
+<h3 id="pure-r-model-code">Pure R model code<a class="anchor" aria-label="anchor" href="#pure-r-model-code"></a>
+</h3>
 <p>The one-compartment PK model can describe the quantity of compound in the gut lumen (<code>Agutlument</code>) and the rest of body (<code>Acompartmant</code>). The <code>Ametabolized</code> is the quantity of compound transform and metabolize through hepatic clearance. The model mainly includes two state variables that are the quantity of compound in the gut lumen (<code>Agutlument</code>) and the rest of body (<code>Acompartmant</code>). The <code>Ametabolized</code> is the quantity of compound transform and metabolize through hepatic clearance.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pbtk1cpt</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">state</span>, <span class="va">parameters</span><span class="op">)</span> <span class="op">{</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/with.html">with</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">as.list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">state</span>, <span class="va">parameters</span><span class="op">)</span><span class="op">)</span>, <span class="op">{</span>
-    <span class="va">dAgutlument</span> <span class="op">=</span> <span class="op">-</span> <span class="va">kgutabs</span> <span class="op">*</span> <span class="va">Agutlument</span>
-    <span class="va">dAcompartment</span> <span class="op">=</span> <span class="va">kgutabs</span> <span class="op">*</span> <span class="va">Agutlument</span> <span class="op">-</span> <span class="va">ke</span> <span class="op">*</span> <span class="va">Acompartment</span>
-    <span class="va">dAmetabolized</span> <span class="op">=</span> <span class="va">ke</span> <span class="op">*</span> <span class="va">Acompartment</span>
-    <span class="va">Ccompartment</span> <span class="op">=</span> <span class="va">Acompartment</span> <span class="op">/</span> <span class="va">vdist</span> <span class="op">*</span> <span class="va">BW</span>;
-    <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">dAgutlument</span>, <span class="va">dAcompartment</span>, <span class="va">dAmetabolized</span><span class="op">)</span>, 
-         <span class="st">"Ccompartment"</span> <span class="op">=</span> <span class="va">Ccompartment</span><span class="op">)</span> 
-  <span class="op">}</span><span class="op">)</span>
-<span class="op">}</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">pbtk1cpt</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">t</span>, <span class="va">state</span>, <span class="va">parameters</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/with.html" class="external-link">with</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">state</span>, <span class="va">parameters</span><span class="op">)</span><span class="op">)</span>, <span class="op">{</span></span>
+<span>    <span class="va">dAgutlument</span> <span class="op">=</span> <span class="op">-</span> <span class="va">kgutabs</span> <span class="op">*</span> <span class="va">Agutlument</span></span>
+<span>    <span class="va">dAcompartment</span> <span class="op">=</span> <span class="va">kgutabs</span> <span class="op">*</span> <span class="va">Agutlument</span> <span class="op">-</span> <span class="va">ke</span> <span class="op">*</span> <span class="va">Acompartment</span></span>
+<span>    <span class="va">dAmetabolized</span> <span class="op">=</span> <span class="va">ke</span> <span class="op">*</span> <span class="va">Acompartment</span></span>
+<span>    <span class="va">Ccompartment</span> <span class="op">=</span> <span class="va">Acompartment</span> <span class="op">/</span> <span class="va">vdist</span> <span class="op">*</span> <span class="va">BW</span>;</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">dAgutlument</span>, <span class="va">dAcompartment</span>, <span class="va">dAmetabolized</span><span class="op">)</span>, </span>
+<span>         <span class="st">"Ccompartment"</span> <span class="op">=</span> <span class="va">Ccompartment</span><span class="op">)</span> </span>
+<span>  <span class="op">}</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
 <p>The parameter values and initial states need to be assigned to specific values before simulation. Here, we use the corresponding parameter value of acetaminophen in this example. These model parameters are derived from the <em>in-vivo</em> or <em>in-vitro</em> experiment results. The parameter value can be generated from <code>parameterize_1comp</code> function in <strong>httk</strong> package as:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://www.epa.gov/chemical-research/rapid-chemical-exposure-and-dose-research">httk</a></span><span class="op">)</span>
-<span class="va">pars1comp</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/httk/man/parameterize_1comp.html">parameterize_1comp</a></span><span class="op">(</span>chem.name <span class="op">=</span> <span class="st">"acetaminophen"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; Human volume of distribution returned in units of L/kg BW.</code></pre>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://www.epa.gov/chemical-research/rapid-chemical-exposure-and-dose-research" class="external-link">httk</a></span><span class="op">)</span></span>
+<span><span class="va">pars1comp</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/httk/man/parameterize_1comp.html" class="external-link">parameterize_1comp</a></span><span class="op">(</span>chem.name <span class="op">=</span> <span class="st">"acetaminophen"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; Human volume of distribution returned in units of L/kg BW.</span></span></code></pre>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="va">pars1comp</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt;                      Vdist                      kelim 
-#&gt;                    "1.034"                   "0.1502" 
-#&gt;                      Clint                 Clint.dist 
-#&gt;                     "0.36"                         NA 
-#&gt;            Funbound.plasma       Funbound.plasma.dist 
-#&gt;                   "0.9215"          "0.9398,0.8226,1" 
-#&gt; Funbound.plasma.adjustment      Fhep.assay.correction 
-#&gt;                   "0.9805"                   "0.9505" 
-#&gt;                        Pow        pKa_Donor.pKa_Donor 
-#&gt;                    "2.898"                      "9.4" 
-#&gt;      pKa_Accept.pKa_Accept                         MA 
-#&gt;                     "None"                         NA 
-#&gt;                    kgutabs              Rblood2plasma 
-#&gt;                     "2.18"                        "1" 
-#&gt;   million.cells.per.gliver              liver.density 
-#&gt;                      "110"                     "1.05" 
-#&gt;                 hematocrit                         MW 
-#&gt;                     "0.44"                    "151.2" 
-#&gt;                    Fgutabs    hepatic.bioavailability 
-#&gt;                        "1"                   "0.9545" 
-#&gt;                         BW 
-#&gt;                       "70"</code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="va">pars1comp</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt;                         BW                      Clint </span></span>
+<span><span class="co">#&gt;                       "70"                   "0.3598" </span></span>
+<span><span class="co">#&gt;                 Clint.dist                    Fgutabs </span></span>
+<span><span class="co">#&gt;                         NA                        "1" </span></span>
+<span><span class="co">#&gt;      Fhep.assay.correction            Funbound.plasma </span></span>
+<span><span class="co">#&gt;                   "0.9506"                   "0.9217" </span></span>
+<span><span class="co">#&gt; Funbound.plasma.adjustment       Funbound.plasma.dist </span></span>
+<span><span class="co">#&gt;                   "0.9807"          "0.9398,0.8226,1" </span></span>
+<span><span class="co">#&gt;                 hematocrit    hepatic.bioavailability </span></span>
+<span><span class="co">#&gt;                     "0.44"                   "0.9546" </span></span>
+<span><span class="co">#&gt;                      kelim                    kgutabs </span></span>
+<span><span class="co">#&gt;                   "0.1487"                     "2.18" </span></span>
+<span><span class="co">#&gt;              liver.density                         MA </span></span>
+<span><span class="co">#&gt;                     "1.05"                         NA </span></span>
+<span><span class="co">#&gt;   million.cells.per.gliver                         MW </span></span>
+<span><span class="co">#&gt;                      "110"                    "151.2" </span></span>
+<span><span class="co">#&gt;      pKa_Accept.pKa_Accept        pKa_Donor.pKa_Donor </span></span>
+<span><span class="co">#&gt;                     "None"                      "9.4" </span></span>
+<span><span class="co">#&gt;                        Pow              Rblood2plasma </span></span>
+<span><span class="co">#&gt;                    "2.898"                        "1" </span></span>
+<span><span class="co">#&gt;                      Vdist </span></span>
+<span><span class="co">#&gt;                    "1.044"</span></span></code></pre>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">parms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>vdist <span class="op">=</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">Vdist</span>, 
-           ke <span class="op">=</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">kelim</span>, 
-           kgutabs <span class="op">=</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">kgutabs</span>, 
-           BW <span class="op">=</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">BW</span><span class="op">)</span>
-<span class="va">initState</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>Agutlument <span class="op">=</span> <span class="fl">10</span>, Acompartment <span class="op">=</span> <span class="fl">0</span>, Ametabolized <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>
-<span class="va">parms</span></code></pre></div>
-<pre><code>#&gt;   vdist      ke kgutabs      BW 
-#&gt;  1.0340  0.1502  2.1800 70.0000</code></pre>
+<code class="sourceCode R"><span><span class="va">parms</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>vdist <span class="op">=</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">Vdist</span>, </span>
+<span>           ke <span class="op">=</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">kelim</span>, </span>
+<span>           kgutabs <span class="op">=</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">kgutabs</span>, </span>
+<span>           BW <span class="op">=</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">BW</span><span class="op">)</span></span>
+<span><span class="va">initState</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Agutlument <span class="op">=</span> <span class="fl">10</span>, Acompartment <span class="op">=</span> <span class="fl">0</span>, Ametabolized <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">parms</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt;   vdist      ke kgutabs      BW </span></span>
+<span><span class="co">#&gt;  1.0440  0.1487  2.1800 70.0000</span></span></code></pre>
 <p>The given value of <code>vdist</code>, <code>ke</code>, and <code>kgutabs</code> in <strong>httk</strong> are 1.1 (L/kg BW), 0.23 (/h), and 2.18 (/h), respectively. The body weight is assumed to be 70 (kg).</p>
 <p>Here shows the given parameter value (<code>parms</code>) and initial state condition (<code>initState</code>) that need to specify in model solving. Both <code>parms</code> and <code>initState</code> are “numeric variables” that contain the value of parameter and initial state condition.</p>
-<p>Using the <code><a href="https://rdrr.io/pkg/deSolve/man/ode.html">ode()</a></code> function in <strong>deSolve</strong> package, we can visualize the PK profile according to the given parameter baseline and the time points (<code>t</code>).</p>
+<p>Using the <code><a href="https://rdrr.io/pkg/deSolve/man/ode.html" class="external-link">ode()</a></code> function in <strong>deSolve</strong> package, we can visualize the PK profile according to the given parameter baseline and the time points (<code>t</code>).</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://desolve.r-forge.r-project.org/">deSolve</a></span><span class="op">)</span>
-<span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span>from <span class="op">=</span> <span class="fl">0.01</span>, to <span class="op">=</span> <span class="fl">24.01</span>, by <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
-<span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/deSolve/man/ode.html">ode</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">initState</span>, times <span class="op">=</span> <span class="va">t</span>, func <span class="op">=</span> <span class="va">pbtk1cpt</span>, parms <span class="op">=</span> <span class="va">parms</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://desolve.r-forge.r-project.org/" class="external-link">deSolve</a></span><span class="op">)</span></span>
+<span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span>from <span class="op">=</span> <span class="fl">0.01</span>, to <span class="op">=</span> <span class="fl">24.01</span>, by <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/deSolve/man/ode.html" class="external-link">ode</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">initState</span>, times <span class="op">=</span> <span class="va">t</span>, func <span class="op">=</span> <span class="va">pbtk1cpt</span>, parms <span class="op">=</span> <span class="va">parms</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span></span></code></pre></div>
 <p><img src="pbtk1cpt_files/figure-html/unnamed-chunk-5-1.png" width="90%" style="display: block; margin: auto;"></p>
 <p>Setting up the parameter distributions. The distribution of parameter is taken to be uniform with bounds corresponding to 50% and 200% of the nominal value.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"vdist"</span>, <span class="st">"ke"</span>, <span class="st">"kgutabs"</span>, <span class="st">"BW"</span><span class="op">)</span>
-<span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"qunif"</span>, <span class="st">"qunif"</span>, <span class="st">"qunif"</span>, <span class="st">"qnorm"</span><span class="op">)</span>
-<span class="va">q.arg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>min <span class="op">=</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">Vdist</span> <span class="op">/</span> <span class="fl">2</span>, max <span class="op">=</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">Vdist</span> <span class="op">*</span> <span class="fl">2</span><span class="op">)</span>,
-              <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>min <span class="op">=</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">kelim</span> <span class="op">/</span> <span class="fl">2</span>, max <span class="op">=</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">kelim</span> <span class="op">*</span> <span class="fl">2</span><span class="op">)</span>,
-              <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>min <span class="op">=</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">kgutabs</span> <span class="op">/</span> <span class="fl">2</span>, max <span class="op">=</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">kgutabs</span> <span class="op">*</span> <span class="fl">2</span><span class="op">)</span>,
-              <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">BW</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span>
-<span class="va">q.arg</span></code></pre></div>
-<pre><code>#&gt; [[1]]
-#&gt; [[1]]$min
-#&gt; [1] 0.517
-#&gt; 
-#&gt; [[1]]$max
-#&gt; [1] 2.068
-#&gt; 
-#&gt; 
-#&gt; [[2]]
-#&gt; [[2]]$min
-#&gt; [1] 0.0751
-#&gt; 
-#&gt; [[2]]$max
-#&gt; [1] 0.3004
-#&gt; 
-#&gt; 
-#&gt; [[3]]
-#&gt; [[3]]$min
-#&gt; [1] 1.09
-#&gt; 
-#&gt; [[3]]$max
-#&gt; [1] 4.36
-#&gt; 
-#&gt; 
-#&gt; [[4]]
-#&gt; [[4]]$mean
-#&gt; [1] 70
-#&gt; 
-#&gt; [[4]]$sd
-#&gt; [1] 5</code></pre>
+<code class="sourceCode R"><span><span class="va">params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"vdist"</span>, <span class="st">"ke"</span>, <span class="st">"kgutabs"</span>, <span class="st">"BW"</span><span class="op">)</span></span>
+<span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"qunif"</span>, <span class="st">"qunif"</span>, <span class="st">"qunif"</span>, <span class="st">"qnorm"</span><span class="op">)</span></span>
+<span><span class="va">q.arg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>min <span class="op">=</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">Vdist</span> <span class="op">/</span> <span class="fl">2</span>, max <span class="op">=</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">Vdist</span> <span class="op">*</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>              <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>min <span class="op">=</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">kelim</span> <span class="op">/</span> <span class="fl">2</span>, max <span class="op">=</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">kelim</span> <span class="op">*</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>              <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>min <span class="op">=</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">kgutabs</span> <span class="op">/</span> <span class="fl">2</span>, max <span class="op">=</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">kgutabs</span> <span class="op">*</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>              <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">BW</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">q.arg</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; [[1]]$min</span></span>
+<span><span class="co">#&gt; [1] 0.522</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[1]]$max</span></span>
+<span><span class="co">#&gt; [1] 2.088</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[2]]</span></span>
+<span><span class="co">#&gt; [[2]]$min</span></span>
+<span><span class="co">#&gt; [1] 0.07435</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[2]]$max</span></span>
+<span><span class="co">#&gt; [1] 0.2974</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[3]]</span></span>
+<span><span class="co">#&gt; [[3]]$min</span></span>
+<span><span class="co">#&gt; [1] 1.09</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[3]]$max</span></span>
+<span><span class="co">#&gt; [1] 4.36</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[4]]</span></span>
+<span><span class="co">#&gt; [[4]]$mean</span></span>
+<span><span class="co">#&gt; [1] 70</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[4]]$sd</span></span>
+<span><span class="co">#&gt; [1] 5</span></span></code></pre>
 <p>The parameter ranges are assumed to be 0.55 and 2.2 L/kg BW for <code>vdist</code>. The <code>ke</code> are ranged from 0.12 to 0.47 /h, corresponding to half-times of 1.5 and 5.8 hr. The <code>ka</code> are ranged 1.09 to 4.36 /h. The <code>BW</code> is assumed to a normal distribution with mean = 70 kg and sd = 5 kg.</p>
-<p>Here, we set a sample size of 200 with 10 replications. Through <code><a href="../reference/rfast99.html">rfast99()</a></code> function, a S3 object with class <code>rfast99</code> will be created. The <code><a href="https://rdrr.io/r/base/Random.html">set.seed()</a></code> can use to reproduce the same parameter matrix in the random sampling. The sample size determines the robustness of the result of SA. Higher number of sample size lead to narrower confidence intervals for sensitivity measurements across different replications. However, it will take a longer time in computation.</p>
+<p>Here, we set a sample size of 200 with 10 replications. Through <code><a href="../reference/rfast99.html">rfast99()</a></code> function, a S3 object with class <code>rfast99</code> will be created. The <code><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed()</a></code> can use to reproduce the same parameter matrix in the random sampling. The sample size determines the robustness of the result of SA. Higher number of sample size lead to narrower confidence intervals for sensitivity measurements across different replications. However, it will take a longer time in computation.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span>
-<span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rfast99.html">rfast99</a></span><span class="op">(</span><span class="va">params</span>, n <span class="op">=</span> <span class="fl">200</span>, q <span class="op">=</span> <span class="va">q</span>, q.arg <span class="op">=</span> <span class="va">q.arg</span>, replicate <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rfast99.html">rfast99</a></span><span class="op">(</span><span class="va">params</span>, n <span class="op">=</span> <span class="fl">200</span>, q <span class="op">=</span> <span class="va">q</span>, q.arg <span class="op">=</span> <span class="va">q.arg</span>, replicate <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 <p>The generated parameters are stored as a 3-D array under the named <code>a</code>, with the dimension of sample size, the number of replications, and the number of parameters, respectively.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; [1] 800  10   4</code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; [1] 800  10   4</span></span></code></pre>
 <p>The sample number is 200, with 4 model parameters, which generates 800 model evaluations. The replication is set to 10. Therefore, the total of 8,000 parameter sequence will be used to compute the corresponding outputs. Figure  plotted the sampling process for each parameter from the first 3 replications. The search curves show the different intensity of sampling patterns in each segment.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">4</span><span class="op">)</span>,mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.8</span>,<span class="fl">0.8</span>,<span class="fl">0.8</span>,<span class="fl">0</span><span class="op">)</span>,oma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">4</span>,<span class="fl">2</span>,<span class="fl">1</span><span class="op">)</span>, pch <span class="op">=</span><span class="st">"."</span><span class="op">)</span>
-<span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"vdist"</span>, <span class="st">"ke"</span>, <span class="st">"kgutabs"</span>, <span class="st">"BW"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
-  <span class="kw">if</span> <span class="op">(</span> <span class="va">j</span> <span class="op">==</span> <span class="st">"BW"</span><span class="op">)</span> <span class="op">{</span>
-    <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,<span class="fl">1</span>,<span class="va">j</span><span class="op">]</span>, ylab <span class="op">=</span> <span class="st">"BW"</span><span class="op">)</span>
-  <span class="op">}</span> <span class="kw">else</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,<span class="fl">1</span>,<span class="va">j</span><span class="op">]</span>, xaxt<span class="op">=</span><span class="st">"n"</span>, ylab <span class="op">=</span> <span class="st">""</span><span class="op">)</span>
-  <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span> <span class="op">{</span>
-  <span class="kw">if</span> <span class="op">(</span> <span class="va">j</span> <span class="op">==</span> <span class="st">"BW"</span><span class="op">)</span> <span class="op">{</span>
-    <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,<span class="va">i</span>,<span class="va">j</span><span class="op">]</span>, ylab <span class="op">=</span> <span class="st">""</span>, yaxt<span class="op">=</span><span class="st">"n"</span><span class="op">)</span>  
-    <span class="op">}</span> <span class="kw">else</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,<span class="va">i</span>,<span class="va">j</span><span class="op">]</span>, xaxt<span class="op">=</span><span class="st">"n"</span>, yaxt<span class="op">=</span><span class="st">"n"</span>, ylab <span class="op">=</span> <span class="st">""</span><span class="op">)</span>
-  <span class="op">}</span> 
-  <span class="va">hist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,,<span class="va">j</span><span class="op">]</span>, plot<span class="op">=</span><span class="cn">FALSE</span>, 
-               breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span>from<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,,<span class="va">j</span><span class="op">]</span><span class="op">)</span>, to<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,,<span class="va">j</span><span class="op">]</span><span class="op">)</span>, length.out<span class="op">=</span><span class="fl">20</span><span class="op">)</span><span class="op">)</span>
-  <span class="fu"><a href="https://rdrr.io/r/graphics/barplot.html">barplot</a></span><span class="op">(</span><span class="va">hist</span><span class="op">$</span><span class="va">density</span>, axes<span class="op">=</span><span class="cn">FALSE</span>, space<span class="op">=</span><span class="fl">0</span>, horiz <span class="op">=</span> <span class="cn">T</span>, main <span class="op">=</span> <span class="va">j</span><span class="op">)</span> 
-<span class="op">}</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html">mtext</a></span><span class="op">(</span><span class="st">"Model evaluation"</span>, <span class="va">SOUTH</span><span class="op">&lt;-</span><span class="fl">1</span>, line<span class="op">=</span><span class="fl">2</span>, outer<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">4</span><span class="op">)</span>,mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.8</span>,<span class="fl">0.8</span>,<span class="fl">0.8</span>,<span class="fl">0</span><span class="op">)</span>,oma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">4</span>,<span class="fl">2</span>,<span class="fl">1</span><span class="op">)</span>, pch <span class="op">=</span><span class="st">"."</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"vdist"</span>, <span class="st">"ke"</span>, <span class="st">"kgutabs"</span>, <span class="st">"BW"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span> <span class="va">j</span> <span class="op">==</span> <span class="st">"BW"</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,<span class="fl">1</span>,<span class="va">j</span><span class="op">]</span>, ylab <span class="op">=</span> <span class="st">"BW"</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,<span class="fl">1</span>,<span class="va">j</span><span class="op">]</span>, xaxt<span class="op">=</span><span class="st">"n"</span>, ylab <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">2</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span> <span class="va">j</span> <span class="op">==</span> <span class="st">"BW"</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,<span class="va">i</span>,<span class="va">j</span><span class="op">]</span>, ylab <span class="op">=</span> <span class="st">""</span>, yaxt<span class="op">=</span><span class="st">"n"</span><span class="op">)</span>  </span>
+<span>    <span class="op">}</span> <span class="kw">else</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,<span class="va">i</span>,<span class="va">j</span><span class="op">]</span>, xaxt<span class="op">=</span><span class="st">"n"</span>, yaxt<span class="op">=</span><span class="st">"n"</span>, ylab <span class="op">=</span> <span class="st">""</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> </span>
+<span>  <span class="va">hist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/hist.html" class="external-link">hist</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,,<span class="va">j</span><span class="op">]</span>, plot<span class="op">=</span><span class="cn">FALSE</span>, </span>
+<span>               breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span>from<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,,<span class="va">j</span><span class="op">]</span><span class="op">)</span>, to<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,,<span class="va">j</span><span class="op">]</span><span class="op">)</span>, length.out<span class="op">=</span><span class="fl">20</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/barplot.html" class="external-link">barplot</a></span><span class="op">(</span><span class="va">hist</span><span class="op">$</span><span class="va">density</span>, axes<span class="op">=</span><span class="cn">FALSE</span>, space<span class="op">=</span><span class="fl">0</span>, horiz <span class="op">=</span> <span class="cn">T</span>, main <span class="op">=</span> <span class="va">j</span><span class="op">)</span> </span>
+<span><span class="op">}</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"Model evaluation"</span>, <span class="va">SOUTH</span><span class="op">&lt;-</span><span class="fl">1</span>, line<span class="op">=</span><span class="fl">2</span>, outer<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="pbtk1cpt_files/figure-html/unnamed-chunk-9-1.png" width="90%" style="display: block; margin: auto;"></p>
-<p>Because the PK model is being used to describe a continuous process for the chemical concentration over time, the sensitivity measurements, therefore, have the time-dependent relationships for each model parameter. Here we use the defined output time points (<code>t</code>) to examine the change of the parameter sensitivity over time. To solve the model through <strong>deSolve</strong>, we need to provide the details of the argument, which include time (<code>t</code>), initial conditions of state variable (<code>initState</code>), output variables (<code>outnames</code>), and name of the model function (<code>func</code>). To create the time-dependent sensitivity measurement, we set the time duration from 0.01 to 24.01 hours with the time segment of 1 hour as the above definition in <code><a href="https://rdrr.io/pkg/deSolve/man/ode.html">ode()</a></code> function in this example. The initial time point should avoid 0 to prevent computational error in misconduct. The <code>outnames</code> is based on the arguments from the <code><a href="https://rdrr.io/pkg/deSolve/man/ode.html">ode()</a></code> function in <strong>deSolve</strong> package.</p>
+<p>Because the PK model is being used to describe a continuous process for the chemical concentration over time, the sensitivity measurements, therefore, have the time-dependent relationships for each model parameter. Here we use the defined output time points (<code>t</code>) to examine the change of the parameter sensitivity over time. To solve the model through <strong>deSolve</strong>, we need to provide the details of the argument, which include time (<code>t</code>), initial conditions of state variable (<code>initState</code>), output variables (<code>outnames</code>), and name of the model function (<code>func</code>). To create the time-dependent sensitivity measurement, we set the time duration from 0.01 to 24.01 hours with the time segment of 1 hour as the above definition in <code><a href="https://rdrr.io/pkg/deSolve/man/ode.html" class="external-link">ode()</a></code> function in this example. The initial time point should avoid 0 to prevent computational error in misconduct. The <code>outnames</code> is based on the arguments from the <code><a href="https://rdrr.io/pkg/deSolve/man/ode.html" class="external-link">ode()</a></code> function in <strong>deSolve</strong> package.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">outputs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Ccompartment"</span>, <span class="st">"Ametabolized"</span><span class="op">)</span>
-<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/solve_fun.html">solve_fun</a></span><span class="op">(</span><span class="va">x</span>, time <span class="op">=</span> <span class="va">t</span>, func <span class="op">=</span> <span class="va">pbtk1cpt</span>, initState <span class="op">=</span> <span class="va">initState</span>, outnames <span class="op">=</span> <span class="va">outputs</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; Starting time: 2021-07-07 11:11:13</code></pre>
-<pre><code>#&gt; Ending time: 2021-07-07 11:12:28</code></pre>
-<p>The output result <code>out</code> is an S3 object of <code><a href="../reference/rfast99.html">rfast99()</a></code> as well, which can link with <code><a href="https://rdrr.io/r/base/print.html">print()</a></code>, <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code>, and <code><a href="../reference/check.html">check()</a></code> method to examine the sensitivity measurements. The <code><a href="https://rdrr.io/r/base/print.html">print()</a></code> function gives the sensitivity and convergence indices for main, interaction, and total order at each time point. In addition to print out the result of SA, the more efficient way to distinguish the influence of model parameter is to visualize these indices.</p>
+<code class="sourceCode R"><span><span class="va">outputs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ccompartment"</span>, <span class="st">"Ametabolized"</span><span class="op">)</span></span>
+<span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/solve_fun.html">solve_fun</a></span><span class="op">(</span><span class="va">x</span>, time <span class="op">=</span> <span class="va">t</span>, func <span class="op">=</span> <span class="va">pbtk1cpt</span>, initState <span class="op">=</span> <span class="va">initState</span>, outnames <span class="op">=</span> <span class="va">outputs</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; Starting time: 2022-09-22 15:53:22</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Ending time: 2022-09-22 15:55:51</span></span></code></pre>
+<p>The output result <code>out</code> is an S3 object of <code><a href="../reference/rfast99.html">rfast99()</a></code> as well, which can link with <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code>, <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>, and <code><a href="../reference/check.html">check()</a></code> method to examine the sensitivity measurements. The <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> function gives the sensitivity and convergence indices for main, interaction, and total order at each time point. In addition to print out the result of SA, the more efficient way to distinguish the influence of model parameter is to visualize these indices.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span></code></pre></div>
 <p><img src="pbtk1cpt_files/figure-html/unnamed-chunk-11-1.png" width="90%" style="display: block; margin: auto;"></p>
 <p>The SI has computed range from 0 (no impact) to 1 (high impact) and represents the contribution percentage of output variance under the given parameter distributions. The solid line represents the total (black) and first (red) order SI with 95% confidence interval (polygon). The dashed line is the cut-off with the default value of 0.05.</p>
 <p>Here, we can see that <code>vdist</code> and <code>ke</code> dominate the plasma concentration before and after 5-hr post chemical intake, respectively. The parameter <code>kgutabs</code> only plays a crucial role to determine the plasma concentration in the first hour. However, the current result only based on the distribution of model parameters for APAP. Given different input conditions (e.g., range of parameter uncertainty, chemical-dependent parameter value) the result can of course change (result not shown).</p>
-<p>The default output in the plotting is setting at the first variable. To exam the time-dependent SI of other variables, such as <code>Ametabolized</code> in this case, we need to assign the variable name <code>vars = "Ametabolized"</code> in <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> function.</p>
+<p>The default output in the plotting is setting at the first variable. To exam the time-dependent SI of other variables, such as <code>Ametabolized</code> in this case, we need to assign the variable name <code>vars = "Ametabolized"</code> in <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> function.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">out</span>, vars <span class="op">=</span> <span class="st">"Ametabolized"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">out</span>, vars <span class="op">=</span> <span class="st">"Ametabolized"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="pbtk1cpt_files/figure-html/unnamed-chunk-12-1.png" width="90%" style="display: block; margin: auto;"></p>
 <p>The amount of metabolized is also determined by parameter <code>ke</code>. Same as <code>Ccompartment</code>, the <code>kgutabs</code> contribute about 30 - 40% variation of model output in the first hour. The <code>BW</code> is the least important parameter in the current analysis, and therefore, can be fixed in the model fitting to data and additional applications.</p>
 <p>In addition to using the time-SI profile to investigate the parameter impact on model output, we can directly examine the relationship between parameters and model output graphically.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span>mfcol<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">4</span><span class="op">)</span>,mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.8</span>,<span class="fl">0.8</span>,<span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>,oma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">4</span>,<span class="fl">2</span>,<span class="fl">1</span><span class="op">)</span>, pch <span class="op">=</span> <span class="st">"."</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,<span class="fl">1</span>,<span class="st">"vdist"</span><span class="op">]</span>, <span class="va">out</span><span class="op">$</span><span class="va">y</span><span class="op">[</span>,<span class="fl">1</span>,<span class="st">"0.01"</span>,<span class="fl">1</span><span class="op">]</span>, xaxt<span class="op">=</span><span class="st">"n"</span>, main <span class="op">=</span> <span class="st">"\nvdist"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,<span class="fl">1</span>,<span class="st">"vdist"</span><span class="op">]</span>, <span class="va">out</span><span class="op">$</span><span class="va">y</span><span class="op">[</span>,<span class="fl">1</span>,<span class="st">"2.01"</span>,<span class="fl">1</span><span class="op">]</span>, xaxt<span class="op">=</span><span class="st">"n"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,<span class="fl">1</span>,<span class="st">"vdist"</span><span class="op">]</span>, <span class="va">out</span><span class="op">$</span><span class="va">y</span><span class="op">[</span>,<span class="fl">1</span>,<span class="st">"6.01"</span>,<span class="fl">1</span><span class="op">]</span>, xaxt<span class="op">=</span><span class="st">"n"</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,<span class="fl">1</span>,<span class="st">"vdist"</span><span class="op">]</span>, <span class="va">out</span><span class="op">$</span><span class="va">y</span><span class="op">[</span>,<span class="fl">1</span>,<span class="st">"24.01"</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span>
-<span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"ke"</span>, <span class="st">"kgutabs"</span>, <span class="st">"BW"</span><span class="op">)</span><span class="op">)</span><span class="op">{</span>
-  <span class="kw">for</span> <span class="op">(</span><span class="va">k</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"0.01"</span>, <span class="st">"2.01"</span>, <span class="st">"6.01"</span>, <span class="st">"24.01"</span><span class="op">)</span><span class="op">)</span><span class="op">{</span>
-    <span class="kw">if</span> <span class="op">(</span><span class="va">k</span> <span class="op">==</span> <span class="st">"0.01"</span><span class="op">)</span> <span class="op">{</span>
-      <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,<span class="fl">1</span>,<span class="va">j</span><span class="op">]</span>, <span class="va">out</span><span class="op">$</span><span class="va">y</span><span class="op">[</span>,<span class="fl">1</span>,<span class="va">k</span>,<span class="fl">1</span><span class="op">]</span>, yaxt <span class="op">=</span> <span class="st">"n"</span>, xaxt<span class="op">=</span><span class="st">"n"</span>, main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"\n"</span>, <span class="va">j</span><span class="op">)</span><span class="op">)</span>
-    <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">k</span> <span class="op">==</span> <span class="st">"24.01"</span><span class="op">)</span> <span class="op">{</span>
-      <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,<span class="fl">1</span>,<span class="va">j</span><span class="op">]</span>, <span class="va">out</span><span class="op">$</span><span class="va">y</span><span class="op">[</span>,<span class="fl">1</span>,<span class="va">k</span>,<span class="fl">1</span><span class="op">]</span>, yaxt <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span>
-      <span class="op">}</span> <span class="kw">else</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,<span class="fl">1</span>,<span class="va">j</span><span class="op">]</span>, <span class="va">out</span><span class="op">$</span><span class="va">y</span><span class="op">[</span>,<span class="fl">1</span>,<span class="va">k</span>,<span class="fl">1</span><span class="op">]</span>, xaxt <span class="op">=</span> <span class="st">"n"</span>, yaxt <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span>
-  <span class="op">}</span>
-<span class="op">}</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html">mtext</a></span><span class="op">(</span><span class="st">"Parameter"</span>, <span class="va">SOUTH</span><span class="op">&lt;-</span><span class="fl">1</span>, line<span class="op">=</span><span class="fl">2</span>, outer<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html">mtext</a></span><span class="op">(</span><span class="st">"Ccompartment"</span>, <span class="va">WEST</span><span class="op">&lt;-</span><span class="fl">2</span>, line<span class="op">=</span><span class="fl">2</span>, outer<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfcol<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">4</span><span class="op">)</span>,mar<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.8</span>,<span class="fl">0.8</span>,<span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>,oma<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>,<span class="fl">4</span>,<span class="fl">2</span>,<span class="fl">1</span><span class="op">)</span>, pch <span class="op">=</span> <span class="st">"."</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,<span class="fl">1</span>,<span class="st">"vdist"</span><span class="op">]</span>, <span class="va">out</span><span class="op">$</span><span class="va">y</span><span class="op">[</span>,<span class="fl">1</span>,<span class="st">"0.01"</span>,<span class="fl">1</span><span class="op">]</span>, xaxt<span class="op">=</span><span class="st">"n"</span>, main <span class="op">=</span> <span class="st">"\nvdist"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,<span class="fl">1</span>,<span class="st">"vdist"</span><span class="op">]</span>, <span class="va">out</span><span class="op">$</span><span class="va">y</span><span class="op">[</span>,<span class="fl">1</span>,<span class="st">"2.01"</span>,<span class="fl">1</span><span class="op">]</span>, xaxt<span class="op">=</span><span class="st">"n"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,<span class="fl">1</span>,<span class="st">"vdist"</span><span class="op">]</span>, <span class="va">out</span><span class="op">$</span><span class="va">y</span><span class="op">[</span>,<span class="fl">1</span>,<span class="st">"6.01"</span>,<span class="fl">1</span><span class="op">]</span>, xaxt<span class="op">=</span><span class="st">"n"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,<span class="fl">1</span>,<span class="st">"vdist"</span><span class="op">]</span>, <span class="va">out</span><span class="op">$</span><span class="va">y</span><span class="op">[</span>,<span class="fl">1</span>,<span class="st">"24.01"</span>,<span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ke"</span>, <span class="st">"kgutabs"</span>, <span class="st">"BW"</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">k</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"0.01"</span>, <span class="st">"2.01"</span>, <span class="st">"6.01"</span>, <span class="st">"24.01"</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">k</span> <span class="op">==</span> <span class="st">"0.01"</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,<span class="fl">1</span>,<span class="va">j</span><span class="op">]</span>, <span class="va">out</span><span class="op">$</span><span class="va">y</span><span class="op">[</span>,<span class="fl">1</span>,<span class="va">k</span>,<span class="fl">1</span><span class="op">]</span>, yaxt <span class="op">=</span> <span class="st">"n"</span>, xaxt<span class="op">=</span><span class="st">"n"</span>, main <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"\n"</span>, <span class="va">j</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">k</span> <span class="op">==</span> <span class="st">"24.01"</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,<span class="fl">1</span>,<span class="va">j</span><span class="op">]</span>, <span class="va">out</span><span class="op">$</span><span class="va">y</span><span class="op">[</span>,<span class="fl">1</span>,<span class="va">k</span>,<span class="fl">1</span><span class="op">]</span>, yaxt <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span>
+<span>      <span class="op">}</span> <span class="kw">else</span> <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span><span class="op">$</span><span class="va">a</span><span class="op">[</span>,<span class="fl">1</span>,<span class="va">j</span><span class="op">]</span>, <span class="va">out</span><span class="op">$</span><span class="va">y</span><span class="op">[</span>,<span class="fl">1</span>,<span class="va">k</span>,<span class="fl">1</span><span class="op">]</span>, xaxt <span class="op">=</span> <span class="st">"n"</span>, yaxt <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"Parameter"</span>, <span class="va">SOUTH</span><span class="op">&lt;-</span><span class="fl">1</span>, line<span class="op">=</span><span class="fl">2</span>, outer<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html" class="external-link">mtext</a></span><span class="op">(</span><span class="st">"Ccompartment"</span>, <span class="va">WEST</span><span class="op">&lt;-</span><span class="fl">2</span>, line<span class="op">=</span><span class="fl">2</span>, outer<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="pbtk1cpt_files/figure-html/unnamed-chunk-13-1.png" width="90%" style="display: block; margin: auto;"></p>
 <p>Here shows the relationship between the concentration of the rest of the body (<code>Ccompartment</code>) and the model parameters at times 0.01, 2.01, 6.01, and 24.01 hr (top to bottom), respectively. We can find that <code>kgutabs</code> and <code>vdist</code> have higher correlation with <code>Ccompartment</code> in the beginning (t = 0.01 h) of post-intake duration compared with other parameters, suggesting that the parameters have high impact on the modeling result. The <code>ke</code> shows a high correlation at the later time period (t = 24.01 h). The parameter <code>BW</code> does not show any obvious relationship with <code>Ccompartment</code>.</p>
 <p>The output variable <code>out</code> containing all the input arguments detailed above and the calculated SI of first order (<code>mSI</code>), interaction (<code>iSI</code>), and total order (<code>tSI</code>). Convergence indices are also stored in the list named <code>mCI</code>, <code>iCI</code>, and <code>tCI</code>. The outputs are formatted as 4-D array in <code>y</code> with the dimension name of model evaluation, number of replications, number of time points, and number of output variables, respectively.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">y</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; [1] 800  10  25   2</code></pre>
-<p>Some functions in <strong>pksensi</strong> provide efficient ways to check the result from global SA. The <code><a href="../reference/check.html">check()</a></code> can determine which parameters have relatively lowered sensitivity measurement across the given time points and model outputs, and therefore can be applied parameter fixing in model calibration. The <code><a href="../reference/check.html">check()</a></code> also provides an argument to specify the target output or change the cut-off value. The argument of <code>SI.cutoff</code> set for example at 0.05, is used to detect the relative non-influential parameters as default, in this case representing a 5% change of the output is contributed from the specific parameter variation.</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">out</span><span class="op">$</span><span class="va">y</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; [1] 800  10  25   2</span></span></code></pre>
+<p>Some functions in <strong>pksensi</strong> provide efficient ways to check the result from global SA. The <code><a href="../reference/check.html">check()</a></code> can determine which parameters have relatively lowered sensitivity measurement across the given time points and model outputs, and therefore can be applied parameter fixing in model calibration. The <code><a href="../reference/check.html">check()</a></code> also provides an argument to specify the target output or change the cut-off value. The argument of <code>cutoff</code> set for example at 0.05, is used to detect the relative non-influential parameters as default, in this case representing a 5% change of the output is contributed from the specific parameter variation.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/check.html">check</a></span><span class="op">(</span><span class="va">out</span>, SI.cutoff <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; 
-#&gt; Sensitivity check ( Index &gt; 0.05 )
-#&gt; ----------------------------------
-#&gt; First order:
-#&gt;  vdist ke kgutabs 
-#&gt; 
-#&gt; Interaction:
-#&gt;  vdist ke kgutabs 
-#&gt; 
-#&gt; Total order:
-#&gt;  vdist ke kgutabs 
-#&gt; 
-#&gt; Unselected factors in total order:
-#&gt;  BW 
-#&gt; 
-#&gt; 
-#&gt; Convergence check ( Index &gt; 0.05 )
-#&gt; ----------------------------------
-#&gt; First order:
-#&gt;  ke kgutabs 
-#&gt; 
-#&gt; Interaction:
-#&gt;   
-#&gt; 
-#&gt; Total order:
-#&gt;  ke</code></pre>
-<p>Based on the sensitivity measurement of the total order, the result shows that <code>BW</code> has a relative lower measurement of SI. However, all parameters do not converge to the setting cut-off, which means the larger sample size is required in further sensitivity testing. Similar to the <code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code> function that can assign specific output variable in the examination, the <code><a href="../reference/check.html">check()</a></code> function can also use the assignment (<code>vars</code>) to examine a given output.</p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/check.html">check</a></span><span class="op">(</span><span class="va">out</span>, cutoff <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Sensitivity check ( Index &gt; 0.05 )</span></span>
+<span><span class="co">#&gt; ----------------------------------</span></span>
+<span><span class="co">#&gt; First order:</span></span>
+<span><span class="co">#&gt;  vdist ke kgutabs </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Interaction:</span></span>
+<span><span class="co">#&gt;  vdist ke kgutabs </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Total order:</span></span>
+<span><span class="co">#&gt;  vdist ke kgutabs </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Unselected factors in total order:</span></span>
+<span><span class="co">#&gt;  BW </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Convergence check ( Index &gt; 0.05 )</span></span>
+<span><span class="co">#&gt; ----------------------------------</span></span>
+<span><span class="co">#&gt; First order:</span></span>
+<span><span class="co">#&gt;  ke kgutabs </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Interaction:</span></span>
+<span><span class="co">#&gt;   </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Total order:</span></span>
+<span><span class="co">#&gt;  ke</span></span></code></pre>
+<p>Based on the sensitivity measurement of the total order, the result shows that <code>BW</code> has a relative lower measurement of SI. However, all parameters do not converge to the setting cut-off, which means the larger sample size is required in further sensitivity testing. Similar to the <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> function that can assign specific output variable in the examination, the <code><a href="../reference/check.html">check()</a></code> function can also use the assignment (<code>vars</code>) to examine a given output.</p>
 </div>
-<div id="gnu-mcsim-model-code" class="section level3">
-<h3 class="hasAnchor">
-<a href="#gnu-mcsim-model-code" class="anchor"></a>GNU MCSim model code</h3>
+<div class="section level3">
+<h3 id="gnu-mcsim-model-code">GNU MCSim model code<a class="anchor" aria-label="anchor" href="#gnu-mcsim-model-code"></a>
+</h3>
 <p>Running model under <strong>GNU MCSim</strong> native code can have a faster speed to obtain the model outputs. This subsection will show how to conduct global SA with <strong>deSolve</strong> package with <strong>GNU MCSim</strong> model code.</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/models.html">pbtk1cpt_model</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; [1] TRUE</code></pre>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html">readLines</a></span><span class="op">(</span><span class="st">"pbtk1cpt.model"</span><span class="op">)</span>, sep <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; ## pbtk1cpt.model (Based on R httk package) ----
-#&gt; 
-#&gt; States  = { Agutlument, Acompartment, Ametabolized };
-#&gt; Outputs = { Ccompartment };
-#&gt; 
-#&gt; kgutabs = 1;  # absorption rate constant (/h)
-#&gt; vdist = 1;    # volume of distribution (L/kg BW)
-#&gt; ke = 1;       # elimination rate constant (/h)
-#&gt; BW = 70;      # Body weight (kg)
-#&gt; 
-#&gt; Dynamics {
-#&gt;   dt (Agutlument) = - kgutabs * Agutlument;
-#&gt;   dt (Acompartment) = kgutabs * Agutlument - ke * Acompartment;
-#&gt;   dt (Ametabolized) = ke * Acompartment;
-#&gt;   Ccompartment = Acompartment / vdist * BW;
-#&gt; }
-#&gt; End.</code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/models.html">pbtk1cpt_model</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="st">"pbtk1cpt.model"</span><span class="op">)</span>, sep <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; ## pbtk1cpt.model (Based on R httk package) ----</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; States  = { Agutlument, Acompartment, Ametabolized };</span></span>
+<span><span class="co">#&gt; Outputs = { Ccompartment };</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; kgutabs = 1;  # absorption rate constant (/h)</span></span>
+<span><span class="co">#&gt; vdist = 1;    # volume of distribution (L/kg BW)</span></span>
+<span><span class="co">#&gt; ke = 1;       # elimination rate constant (/h)</span></span>
+<span><span class="co">#&gt; BW = 70;      # Body weight (kg)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Dynamics {</span></span>
+<span><span class="co">#&gt;   dt (Agutlument) = - kgutabs * Agutlument;</span></span>
+<span><span class="co">#&gt;   dt (Acompartment) = kgutabs * Agutlument - ke * Acompartment;</span></span>
+<span><span class="co">#&gt;   dt (Ametabolized) = ke * Acompartment;</span></span>
+<span><span class="co">#&gt;   Ccompartment = Acompartment / vdist * BW;</span></span>
+<span><span class="co">#&gt; }</span></span>
+<span><span class="co">#&gt; End.</span></span></code></pre>
 <p>The code must first be compiled to run the model. After create the model file, we can use <code><a href="../reference/compile_model.html">compile_model()</a></code> function to generate the file that has dynamic-link library (DLL) or share object (SO) extension and can be linked dynamically into an R session (<code>pbtk1cpt.dll</code> on Windows or <code>pbtk1cpt.so</code> on other systems) and R file (<code>pbtk1cpt_inits.R</code>) with default input parameters and initial state settings with the definition of <code>application = "R"</code>.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">mName</span> <span class="op">&lt;-</span> <span class="st">"pbtk1cpt"</span>
-<span class="fu"><a href="../reference/compile_model.html">compile_model</a></span><span class="op">(</span><span class="va">mName</span>, application <span class="op">=</span> <span class="st">"R"</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; * Created file 'pbtk1cpt.dll'.</code></pre>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">mName</span> <span class="op">&lt;-</span> <span class="st">"pbtk1cpt"</span></span>
+<span><span class="fu"><a href="../reference/compile_model.html">compile_model</a></span><span class="op">(</span><span class="va">mName</span>, application <span class="op">=</span> <span class="st">"R"</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; * Created file 'pbtk1cpt.dll'.</span></span></code></pre>
 <p>The <code>pbtk1cpt_inits.R</code> file includes <code>initParms</code> and <code>initStates</code> functions and <code>Outputs</code> variable. The created function have default value of model parameters and initial conditions that can further use to customize in the simulation.</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="va">mName</span>, <span class="st">"_inits.R"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">mName</span>, <span class="st">"_inits.R"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>The parameter values and initial states can be customized to the specific condition. It can also schedule for the given dosing scenario. In the current setting, we assumed the initial condition of the intake dose to be 1000 mg. We can use <code>initParms</code> and <code>initStates</code> functions to customize the parameter values and the initial state that will be used in the following modeling and SA. These additional functions are generated when compiling the model file. We used the the same parameter values in this section.</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">parms</span> <span class="op">&lt;-</span> <span class="fu">initParms</span><span class="op">(</span><span class="op">)</span>
-<span class="va">parms</span><span class="op">[</span><span class="st">"vdist"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">Vdist</span>
-<span class="va">parms</span><span class="op">[</span><span class="st">"ke"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">kelim</span>
-<span class="va">parms</span><span class="op">[</span><span class="st">"kgutabs"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">kgutabs</span>
-<span class="va">parms</span><span class="op">[</span><span class="st">"BW"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">BW</span>
-<span class="va">initState</span> <span class="op">&lt;-</span> <span class="fu">initStates</span><span class="op">(</span>parms<span class="op">=</span><span class="va">parms</span><span class="op">)</span>
-<span class="va">initState</span><span class="op">[</span><span class="st">"Agutlument"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">10</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">parms</span> <span class="op">&lt;-</span> <span class="fu">initParms</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">parms</span><span class="op">[</span><span class="st">"vdist"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">Vdist</span></span>
+<span><span class="va">parms</span><span class="op">[</span><span class="st">"ke"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">kelim</span></span>
+<span><span class="va">parms</span><span class="op">[</span><span class="st">"kgutabs"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">kgutabs</span></span>
+<span><span class="va">parms</span><span class="op">[</span><span class="st">"BW"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">pars1comp</span><span class="op">$</span><span class="va">BW</span></span>
+<span><span class="va">initState</span> <span class="op">&lt;-</span> <span class="fu">initStates</span><span class="op">(</span>parms<span class="op">=</span><span class="va">parms</span><span class="op">)</span></span>
+<span><span class="va">initState</span><span class="op">[</span><span class="st">"Agutlument"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">10</span></span></code></pre></div>
 <p>Here shows the given parameter value (<code>parms</code>), initial state condition (<code>initStat</code>), and the output variable (<code>Outputs</code>) that need to specify in model solving.</p>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">parms</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; kgutabs   vdist      ke      BW </span></span>
+<span><span class="co">#&gt;  2.1800  1.0440  0.1487 70.0000</span></span></code></pre>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">parms</span></code></pre></div>
-<pre><code>#&gt; kgutabs   vdist      ke      BW 
-#&gt;  2.1800  1.0340  0.1502 70.0000</code></pre>
+<code class="sourceCode R"><span><span class="va">initState</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt;   Agutlument Acompartment Ametabolized </span></span>
+<span><span class="co">#&gt;           10            0            0</span></span></code></pre>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">initState</span></code></pre></div>
-<pre><code>#&gt;   Agutlument Acompartment Ametabolized 
-#&gt;           10            0            0</code></pre>
+<code class="sourceCode R"><span><span class="va">Outputs</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; [1] "Ccompartment"</span></span></code></pre>
+<p>Using the <code><a href="https://rdrr.io/pkg/deSolve/man/ode.html" class="external-link">ode()</a></code> function in <strong>deSolve</strong> package. Unlike above example, we have to assign additional arguments, such as <code>dllname</code>, <code>initfunc</code>, <code>nout</code>, and <code>outnames</code>.</p>
 <div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">Outputs</span></code></pre></div>
-<pre><code>#&gt; [1] "Ccompartment"</code></pre>
-<p>Using the <code><a href="https://rdrr.io/pkg/deSolve/man/ode.html">ode()</a></code> function in <strong>deSolve</strong> package. Unlike above example, we have to assign additional arguments, such as <code>dllname</code>, <code>initfunc</code>, <code>nout</code>, and <code>outnames</code>.</p>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span>from <span class="op">=</span> <span class="fl">0.01</span>, to <span class="op">=</span> <span class="fl">24.01</span>, by <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>
-<span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/deSolve/man/ode.html">ode</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">initState</span>, times <span class="op">=</span> <span class="va">t</span>, func <span class="op">=</span> <span class="st">"derivs"</span>, parms <span class="op">=</span> <span class="va">parms</span>, 
-         dllname <span class="op">=</span> <span class="va">mName</span>, initfunc <span class="op">=</span> <span class="st">"initmod"</span>, 
-         nout <span class="op">=</span> <span class="fl">1</span>, outnames <span class="op">=</span> <span class="va">Outputs</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt;      time   Agutlument Acompartment Ametabolized Ccompartment
-#&gt; [1,] 0.01 1.000000e+01     0.000000    0.0000000       0.0000
-#&gt; [2,] 1.01 1.130415e+00     8.028071    0.8415148     543.4864
-#&gt; [3,] 2.01 1.277833e-01     7.815948    2.0562688     529.1261
-#&gt; [4,] 3.01 1.444478e-02     6.828489    3.1570665     462.2768
-#&gt; [5,] 4.01 1.632918e-03     5.887756    4.1106114     398.5908
-#&gt; [6,] 5.01 1.845458e-04     5.067936    4.9318797     343.0904</code></pre>
+<code class="sourceCode R"><span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span>from <span class="op">=</span> <span class="fl">0.01</span>, to <span class="op">=</span> <span class="fl">24.01</span>, by <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/deSolve/man/ode.html" class="external-link">ode</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">initState</span>, times <span class="op">=</span> <span class="va">t</span>, func <span class="op">=</span> <span class="st">"derivs"</span>, parms <span class="op">=</span> <span class="va">parms</span>, </span>
+<span>         dllname <span class="op">=</span> <span class="va">mName</span>, initfunc <span class="op">=</span> <span class="st">"initmod"</span>, </span>
+<span>         nout <span class="op">=</span> <span class="fl">1</span>, outnames <span class="op">=</span> <span class="va">Outputs</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt;      time   Agutlument Acompartment Ametabolized Ccompartment</span></span>
+<span><span class="co">#&gt; [1,] 0.01 1.000000e+01     0.000000    0.0000000       0.0000</span></span>
+<span><span class="co">#&gt; [2,] 1.01 1.130415e+00     8.036006    0.8335797     538.8126</span></span>
+<span><span class="co">#&gt; [3,] 2.01 1.277833e-01     7.834054    2.0381627     525.2718</span></span>
+<span><span class="co">#&gt; [4,] 3.01 1.444478e-02     6.854291    3.1312643     459.5789</span></span>
+<span><span class="co">#&gt; [5,] 4.01 1.632918e-03     5.918825    4.0795421     396.8561</span></span>
+<span><span class="co">#&gt; [6,] 5.01 1.845457e-04     5.102319    4.8974963     342.1095</span></span></code></pre>
 <p>Same as above, use the following code to define the parameter distributions and generate parameter matrix.</p>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Define parameter distribution</span>
-<span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"qunif"</span>, <span class="st">"qunif"</span>, <span class="st">"qunif"</span>, <span class="st">"qnorm"</span><span class="op">)</span>
-<span class="va">q.arg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>min <span class="op">=</span> <span class="va">parms</span><span class="op">[</span><span class="st">"vdist"</span><span class="op">]</span> <span class="op">/</span> <span class="fl">2</span>, max <span class="op">=</span> <span class="va">parms</span><span class="op">[</span><span class="st">"vdist"</span><span class="op">]</span> <span class="op">*</span> <span class="fl">2</span><span class="op">)</span>,
-             <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>min <span class="op">=</span> <span class="va">parms</span><span class="op">[</span><span class="st">"ke"</span><span class="op">]</span> <span class="op">/</span> <span class="fl">2</span>, max <span class="op">=</span> <span class="va">parms</span><span class="op">[</span><span class="st">"ke"</span><span class="op">]</span> <span class="op">*</span> <span class="fl">2</span><span class="op">)</span>, 
-             <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>min <span class="op">=</span> <span class="va">parms</span><span class="op">[</span><span class="st">"kgutabs"</span><span class="op">]</span> <span class="op">/</span> <span class="fl">2</span>, max <span class="op">=</span> <span class="va">parms</span><span class="op">[</span><span class="st">"kgutabs"</span><span class="op">]</span> <span class="op">*</span> <span class="fl">2</span><span class="op">)</span>,
-             <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="va">parms</span><span class="op">[</span><span class="st">"BW"</span><span class="op">]</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span> 
-<span class="va">params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"vdist"</span>, <span class="st">"ke"</span>, <span class="st">"kgutabs"</span>, <span class="st">"BW"</span><span class="op">)</span>
-
-<span class="co"># Generate parameter matrix</span>
-<span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span>
-<span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rfast99.html">rfast99</a></span><span class="op">(</span><span class="va">params</span>, n <span class="op">=</span> <span class="fl">200</span>, q <span class="op">=</span> <span class="va">q</span>, q.arg <span class="op">=</span> <span class="va">q.arg</span>, replicate <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Define parameter distribution</span></span>
+<span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"qunif"</span>, <span class="st">"qunif"</span>, <span class="st">"qunif"</span>, <span class="st">"qnorm"</span><span class="op">)</span></span>
+<span><span class="va">q.arg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>min <span class="op">=</span> <span class="va">parms</span><span class="op">[</span><span class="st">"vdist"</span><span class="op">]</span> <span class="op">/</span> <span class="fl">2</span>, max <span class="op">=</span> <span class="va">parms</span><span class="op">[</span><span class="st">"vdist"</span><span class="op">]</span> <span class="op">*</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>             <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>min <span class="op">=</span> <span class="va">parms</span><span class="op">[</span><span class="st">"ke"</span><span class="op">]</span> <span class="op">/</span> <span class="fl">2</span>, max <span class="op">=</span> <span class="va">parms</span><span class="op">[</span><span class="st">"ke"</span><span class="op">]</span> <span class="op">*</span> <span class="fl">2</span><span class="op">)</span>, </span>
+<span>             <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>min <span class="op">=</span> <span class="va">parms</span><span class="op">[</span><span class="st">"kgutabs"</span><span class="op">]</span> <span class="op">/</span> <span class="fl">2</span>, max <span class="op">=</span> <span class="va">parms</span><span class="op">[</span><span class="st">"kgutabs"</span><span class="op">]</span> <span class="op">*</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>             <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="va">parms</span><span class="op">[</span><span class="st">"BW"</span><span class="op">]</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span> </span>
+<span><span class="va">params</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"vdist"</span>, <span class="st">"ke"</span>, <span class="st">"kgutabs"</span>, <span class="st">"BW"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Generate parameter matrix</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rfast99.html">rfast99</a></span><span class="op">(</span><span class="va">params</span>, n <span class="op">=</span> <span class="fl">200</span>, q <span class="op">=</span> <span class="va">q</span>, q.arg <span class="op">=</span> <span class="va">q.arg</span>, replicate <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 <p>Run simulation and check result.</p>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">outputs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Ccompartment"</span>, <span class="st">"Ametabolized"</span><span class="op">)</span>
-<span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/solve_fun.html">solve_fun</a></span><span class="op">(</span><span class="va">x</span>, time <span class="op">=</span> <span class="va">t</span>, initState <span class="op">=</span> <span class="va">initState</span>, outnames <span class="op">=</span> <span class="va">outputs</span>, dllname <span class="op">=</span> <span class="va">mName</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; Starting time: 2021-07-07 11:12:40</code></pre>
-<pre><code>#&gt; Ending time: 2021-07-07 11:12:50</code></pre>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/check.html">check</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; 
-#&gt; Sensitivity check ( Index &gt; 0.05 )
-#&gt; ----------------------------------
-#&gt; First order:
-#&gt;  vdist ke kgutabs 
-#&gt; 
-#&gt; Interaction:
-#&gt;  vdist ke kgutabs 
-#&gt; 
-#&gt; Total order:
-#&gt;  vdist ke kgutabs 
-#&gt; 
-#&gt; Unselected factors in total order:
-#&gt;  BW 
-#&gt; 
-#&gt; 
-#&gt; Convergence check ( Index &gt; 0.05 )
-#&gt; ----------------------------------
-#&gt; First order:
-#&gt;  ke kgutabs 
-#&gt; 
-#&gt; Interaction:
-#&gt;   
-#&gt; 
-#&gt; Total order:
-#&gt;  ke kgutabs</code></pre>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">outputs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Ccompartment"</span>, <span class="st">"Ametabolized"</span><span class="op">)</span></span>
+<span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/solve_fun.html">solve_fun</a></span><span class="op">(</span><span class="va">x</span>, time <span class="op">=</span> <span class="va">t</span>, initState <span class="op">=</span> <span class="va">initState</span>, outnames <span class="op">=</span> <span class="va">outputs</span>, dllname <span class="op">=</span> <span class="va">mName</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; Starting time: 2022-09-22 15:55:55</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Ending time: 2022-09-22 15:56:03</span></span></code></pre>
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/check.html">check</a></span><span class="op">(</span><span class="va">out</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Sensitivity check ( Index &gt; 0.05 )</span></span>
+<span><span class="co">#&gt; ----------------------------------</span></span>
+<span><span class="co">#&gt; First order:</span></span>
+<span><span class="co">#&gt;  vdist ke kgutabs </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Interaction:</span></span>
+<span><span class="co">#&gt;  vdist ke kgutabs </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Total order:</span></span>
+<span><span class="co">#&gt;  vdist ke kgutabs </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Unselected factors in total order:</span></span>
+<span><span class="co">#&gt;  BW </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Convergence check ( Index &gt; 0.05 )</span></span>
+<span><span class="co">#&gt; ----------------------------------</span></span>
+<span><span class="co">#&gt; First order:</span></span>
+<span><span class="co">#&gt;  ke kgutabs </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Interaction:</span></span>
+<span><span class="co">#&gt;   </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Total order:</span></span>
+<span><span class="co">#&gt;  ke</span></span></code></pre>
 <p>The simulation time had huge improvement when using <strong>GNU MCSim</strong> model code.</p>
 </div>
 </div>
-<div id="model-implementation-with-gnu-mcsim-solving-engine" class="section level2">
-<h2 class="hasAnchor">
-<a href="#model-implementation-with-gnu-mcsim-solving-engine" class="anchor"></a>Model Implementation with <strong>GNU MCSim</strong> solving engine</h2>
+<div class="section level2">
+<h2 id="model-implementation-with-gnu-mcsim-solving-engine">Model Implementation with <strong>GNU MCSim</strong> solving engine<a class="anchor" aria-label="anchor" href="#model-implementation-with-gnu-mcsim-solving-engine"></a>
+</h2>
 <p>In addition to use <strong>deSolve</strong> to solve differential equations in PK model, the <strong>GNU MCSim</strong> can provide better computational efficiency. To solve ODE through <strong>GNU MCSim</strong>, we need to change the argument to <code>application = mcsim</code> in <code><a href="../reference/compile_model.html">compile_model()</a></code> function. The computing time of using <code><a href="../reference/solve_fun.html">solve_fun()</a></code> function in SA is estimated as,</p>
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="va">out</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/solve_fun.html">solve_fun</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">t</span>, initState <span class="op">=</span> <span class="va">initState</span>, outnames <span class="op">=</span> <span class="va">Outputs</span>, dllname <span class="op">=</span> <span class="va">mName</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; Starting time: 2021-07-07 11:12:50</code></pre>
-<pre><code>#&gt; Ending time: 2021-07-07 11:13:00</code></pre>
-<pre><code>#&gt;    user  system elapsed 
-#&gt;    9.06    0.03    9.13</code></pre>
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">out</span><span class="op">&lt;-</span><span class="fu"><a href="../reference/solve_fun.html">solve_fun</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">t</span>, initState <span class="op">=</span> <span class="va">initState</span>, outnames <span class="op">=</span> <span class="va">Outputs</span>, dllname <span class="op">=</span> <span class="va">mName</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; Starting time: 2022-09-22 15:56:03</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Ending time: 2022-09-22 15:56:10</span></span></code></pre>
+<pre><code><span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;    6.15    0.14    6.28</span></span></code></pre>
 <p>Then, before we conduct the SA through <strong>GNU MCSim</strong>, The following code is used to compile the <strong>GNU MCSim</strong> model code to the executable program.</p>
-<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/compile_model.html">compile_model</a></span><span class="op">(</span><span class="va">mName</span>, application <span class="op">=</span> <span class="st">"mcsim"</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; * Created executable file 'mcsim.pbtk1cpt.model.exe'.</code></pre>
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/compile_model.html">compile_model</a></span><span class="op">(</span><span class="va">mName</span>, application <span class="op">=</span> <span class="st">"mcsim"</span><span class="op">)</span></span></code></pre></div>
 <p>Similar to <code><a href="../reference/solve_fun.html">solve_fun()</a></code> function that can define the initial value of parameter and state variable through generated functions, the <code><a href="../reference/solve_mcsim.html">solve_mcsim()</a></code> also has a <code>condition</code> argument that can be used to give the specific input value such as exposure dose, fixed parameter value or initial condition of state variable.</p>
-<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">conditions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Agutlument = 10"</span><span class="op">)</span> 
-<span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/solve_mcsim.html">solve_mcsim</a></span><span class="op">(</span><span class="va">x</span>, mName <span class="op">=</span> <span class="va">mName</span>, params <span class="op">=</span> <span class="va">params</span>, 
-                               vars <span class="op">=</span> <span class="va">Outputs</span>, time <span class="op">=</span> <span class="va">t</span>, 
-                               condition <span class="op">=</span> <span class="va">conditions</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; Starting time: 2021-07-07 11:13:15</code></pre>
-<pre><code>#&gt; * Created input file "sim.in".</code></pre>
-<pre><code>#&gt; Execute: ./mcsim.pbtk1cpt.model.exe sim.in</code></pre>
-<pre><code>#&gt; Ending time: 2021-07-07 11:13:25</code></pre>
-<pre><code>#&gt;    user  system elapsed 
-#&gt;    1.07    0.07   10.02</code></pre>
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">conditions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Agutlument = 10"</span><span class="op">)</span> </span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">out</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/solve_mcsim.html">solve_mcsim</a></span><span class="op">(</span><span class="va">x</span>, mName <span class="op">=</span> <span class="va">mName</span>, params <span class="op">=</span> <span class="va">params</span>, </span>
+<span>                               vars <span class="op">=</span> <span class="va">Outputs</span>, time <span class="op">=</span> <span class="va">t</span>, </span>
+<span>                               condition <span class="op">=</span> <span class="va">conditions</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; Starting time: 2022-09-22 15:56:19</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; * Created input file "sim.in".</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Execute: ./mcsim.pbtk1cpt.model.exe sim.in</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; Ending time: 2022-09-22 15:56:21</span></span></code></pre>
+<pre><code><span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;    0.88    0.03    1.83</span></span></code></pre>
 <p>After solving the equations under the same given condition, we can find that <strong>GNU MCSim</strong> provide faster speed in computing performance than using <strong>deSolve</strong>. In this case, we only focus on performing the global SA alone for generic PK model without additional comparison with experiment data. The PBPK example will display and reproduce our previous published result <span class="citation">(Hsieh et al. 2018)</span> with full global SA workflow.</p>
 </div>
-<div id="session-info" class="section level2">
-<h2 class="hasAnchor">
-<a href="#session-info" class="anchor"></a>Session Info</h2>
-<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<pre><code>#&gt; R version 4.1.0 (2021-05-18)
-#&gt; Platform: x86_64-w64-mingw32/x64 (64-bit)
-#&gt; Running under: Windows 10 x64 (build 18363)
-#&gt; 
-#&gt; Matrix products: default
-#&gt; 
-#&gt; locale:
-#&gt; [1] LC_COLLATE=English_United States.1252 
-#&gt; [2] LC_CTYPE=English_United States.1252   
-#&gt; [3] LC_MONETARY=English_United States.1252
-#&gt; [4] LC_NUMERIC=C                          
-#&gt; [5] LC_TIME=English_United States.1252    
-#&gt; 
-#&gt; attached base packages:
-#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     
-#&gt; 
-#&gt; other attached packages:
-#&gt; [1] deSolve_1.28  httk_2.0.4    pksensi_1.2.2
-#&gt; 
-#&gt; loaded via a namespace (and not attached):
-#&gt;  [1] Rcpp_1.0.6        msm_1.6.8         mvtnorm_1.1-2     lattice_0.20-44  
-#&gt;  [5] getPass_0.2-2     rprojroot_2.0.2   digest_0.6.27     foreach_1.5.1    
-#&gt;  [9] utf8_1.2.1        R6_2.5.0          plyr_1.8.6        survey_4.0       
-#&gt; [13] evaluate_0.14     ggplot2_3.3.4     highr_0.9         pillar_1.6.1     
-#&gt; [17] rlang_0.4.11      data.table_1.14.0 jquerylib_0.1.4   Matrix_1.3-3     
-#&gt; [21] rmarkdown_2.8     pkgdown_1.6.1     textshaping_0.3.5 desc_1.3.0       
-#&gt; [25] splines_4.1.0     stringr_1.4.0     munsell_0.5.0     compiler_4.1.0   
-#&gt; [29] xfun_0.24         pkgconfig_2.0.3   systemfonts_1.0.2 htmltools_0.5.1.1
-#&gt; [33] mitools_2.4       tidyselect_1.1.1  tibble_3.1.2      expm_0.999-6     
-#&gt; [37] codetools_0.2-18  fansi_0.5.0       crayon_1.4.1      dplyr_1.0.6      
-#&gt; [41] grid_4.1.0        jsonlite_1.7.2    gtable_0.3.0      lifecycle_1.0.0  
-#&gt; [45] DBI_1.1.1         magrittr_2.0.1    scales_1.1.1      stringi_1.6.2    
-#&gt; [49] cachem_1.0.5      reshape2_1.4.4    fs_1.5.0          doParallel_1.0.16
-#&gt; [53] bslib_0.2.5.1     ellipsis_0.3.2    ragg_1.1.3        generics_0.1.0   
-#&gt; [57] vctrs_0.3.8       iterators_1.0.13  tools_4.1.0       glue_1.4.2       
-#&gt; [61] purrr_0.3.4       parallel_4.1.0    fastmap_1.1.0     survival_3.2-11  
-#&gt; [65] yaml_2.2.1        colorspace_2.0-1  memoise_2.0.0     knitr_1.33       
-#&gt; [69] sass_0.4.0</code></pre>
+<div class="section level2">
+<h2 id="session-info">Session Info<a class="anchor" aria-label="anchor" href="#session-info"></a>
+</h2>
+<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">#&gt; R version 4.2.1 (2022-06-23 ucrt)</span></span>
+<span><span class="co">#&gt; Platform: x86_64-w64-mingw32/x64 (64-bit)</span></span>
+<span><span class="co">#&gt; Running under: Windows 10 x64 (build 19044)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Matrix products: default</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; locale:</span></span>
+<span><span class="co">#&gt; [1] LC_COLLATE=English_United States.utf8 </span></span>
+<span><span class="co">#&gt; [2] LC_CTYPE=English_United States.utf8   </span></span>
+<span><span class="co">#&gt; [3] LC_MONETARY=English_United States.utf8</span></span>
+<span><span class="co">#&gt; [4] LC_NUMERIC=C                          </span></span>
+<span><span class="co">#&gt; [5] LC_TIME=English_United States.utf8    </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; attached base packages:</span></span>
+<span><span class="co">#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; other attached packages:</span></span>
+<span><span class="co">#&gt; [1] deSolve_1.33  httk_2.1.0    pksensi_1.2.3</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
+<span><span class="co">#&gt;  [1] msm_1.6.9         mvtnorm_1.1-3     lattice_0.20-45   rprojroot_2.0.3  </span></span>
+<span><span class="co">#&gt;  [5] digest_0.6.29     foreach_1.5.2     utf8_1.2.2        R6_2.5.1         </span></span>
+<span><span class="co">#&gt;  [9] survey_4.1-1      evaluate_0.16     ggplot2_3.3.6     highr_0.9        </span></span>
+<span><span class="co">#&gt; [13] pillar_1.8.1      Rdpack_2.4        rlang_1.0.5       rstudioapi_0.13  </span></span>
+<span><span class="co">#&gt; [17] data.table_1.14.2 jquerylib_0.1.4   Matrix_1.4-1      rmarkdown_2.15   </span></span>
+<span><span class="co">#&gt; [21] pkgdown_2.0.6     textshaping_0.3.6 desc_1.4.1        splines_4.2.1    </span></span>
+<span><span class="co">#&gt; [25] stringr_1.4.1     munsell_0.5.0     compiler_4.2.1    xfun_0.32        </span></span>
+<span><span class="co">#&gt; [29] pkgconfig_2.0.3   systemfonts_1.0.4 htmltools_0.5.3   mitools_2.4      </span></span>
+<span><span class="co">#&gt; [33] tidyselect_1.1.2  tibble_3.1.8      expm_0.999-6      codetools_0.2-18 </span></span>
+<span><span class="co">#&gt; [37] fansi_1.0.3       dplyr_1.0.9       rbibutils_2.2.9   grid_4.2.1       </span></span>
+<span><span class="co">#&gt; [41] jsonlite_1.8.0    gtable_0.3.1      lifecycle_1.0.1   DBI_1.1.3        </span></span>
+<span><span class="co">#&gt; [45] magrittr_2.0.3    scales_1.2.1      cli_3.3.0         stringi_1.7.8    </span></span>
+<span><span class="co">#&gt; [49] cachem_1.0.6      fs_1.5.2          doParallel_1.0.17 bslib_0.4.0      </span></span>
+<span><span class="co">#&gt; [53] ragg_1.2.2        generics_0.1.3    vctrs_0.4.1       iterators_1.0.14 </span></span>
+<span><span class="co">#&gt; [57] tools_4.2.1       glue_1.6.2        purrr_0.3.4       parallel_4.2.1   </span></span>
+<span><span class="co">#&gt; [61] fastmap_1.1.0     survival_3.3-1    yaml_2.3.5        colorspace_2.0-3 </span></span>
+<span><span class="co">#&gt; [65] memoise_2.0.1     knitr_1.39        sass_0.4.2</span></span></code></pre>
 </div>
-<div id="references" class="section level2 unnumbered">
-<h2 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h2>
+<div class="section level2 unnumbered">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-JSSv002i09" class="csl-entry">
-Bois, Frederic, and Don Maszle. 1997. <span>“MCSim: A Monte Carlo Simulation Program.”</span> <em>Journal of Statistical Software, Articles</em> 2 (9): 1–60. <a href="https://doi.org/10.18637/jss.v002.i09">https://doi.org/10.18637/jss.v002.i09</a>.
+Bois, Frederic, and Don Maszle. 1997. <span>“MCSim: A Monte Carlo Simulation Program.”</span> <em>Journal of Statistical Software, Articles</em> 2 (9): 1–60. <a href="https://doi.org/10.18637/jss.v002.i09" class="external-link">https://doi.org/10.18637/jss.v002.i09</a>.
 </div>
 <div id="ref-fphar201800588" class="csl-entry">
-Hsieh, Nan-Hung, Brad Reisfeld, Frederic Y. Bois, and Weihsueh A. Chiu. 2018. <span>“Applying a Global Sensitivity Analysis Workflow to Improve the Computational Efficiencies in Physiologically-Based Pharmacokinetic Modeling.”</span> <em>Frontiers in Pharmacology</em> 9: 588. <a href="https://doi.org/10.3389/fphar.2018.00588">https://doi.org/10.3389/fphar.2018.00588</a>.
+Hsieh, Nan-Hung, Brad Reisfeld, Frederic Y. Bois, and Weihsueh A. Chiu. 2018. <span>“Applying a Global Sensitivity Analysis Workflow to Improve the Computational Efficiencies in Physiologically-Based Pharmacokinetic Modeling.”</span> <em>Frontiers in Pharmacology</em> 9: 588. <a href="https://doi.org/10.3389/fphar.2018.00588" class="external-link">https://doi.org/10.3389/fphar.2018.00588</a>.
 </div>
 <div id="ref-JSSv079i04" class="csl-entry">
-Pearce, Robert, R. Woodrow Setzer, Cory Strope, Nisha Sipes, and John Wambaugh. 2017. <span>“<span class="nocase">httk</span>: <span>R</span> Package for High-Throughput Toxicokinetics.”</span> <em>Journal of Statistical Software, Articles</em> 79 (4): 1–26. <a href="https://doi.org/10.18637/jss.v079.i04">https://doi.org/10.18637/jss.v079.i04</a>.
+Pearce, Robert, R. Woodrow Setzer, Cory Strope, Nisha Sipes, and John Wambaugh. 2017. <span>“<span class="nocase">httk</span>: <span>R</span> Package for High-Throughput Toxicokinetics.”</span> <em>Journal of Statistical Software, Articles</em> 79 (4): 1–26. <a href="https://doi.org/10.18637/jss.v079.i04" class="external-link">https://doi.org/10.18637/jss.v079.i04</a>.
 </div>
 <div id="ref-JSSv033i09" class="csl-entry">
-Soetaert, Karline, Thomas Petzoldt, and R. Woodrow Setzer. 2010. <span>“Solving Differential Equations in r: Package deSolve.”</span> <em>Journal of Statistical Software, Articles</em> 33 (9): 1–25. <a href="https://doi.org/10.18637/jss.v033.i09">https://doi.org/10.18637/jss.v033.i09</a>.
+Soetaert, Karline, Thomas Petzoldt, and R. Woodrow Setzer. 2010. <span>“Solving Differential Equations in r: Package deSolve.”</span> <em>Journal of Statistical Software, Articles</em> 33 (9): 1–25. <a href="https://doi.org/10.18637/jss.v033.i09" class="external-link">https://doi.org/10.18637/jss.v033.i09</a>.
 </div>
 </div>
 </div>
@@ -543,11 +535,13 @@ Soetaert, Karline, Thomas Petzoldt, and R. Woodrow Setzer. 2010. <span>“Solvin
 
 
       <footer><div class="copyright">
-  <p>Developed by Nan-Hung Hsieh.</p>
+  <p></p>
+<p>Developed by Nan-Hung Hsieh.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>
@@ -555,6 +549,8 @@ Soetaert, Karline, Thomas Petzoldt, and R. Woodrow Setzer. 2010. <span>“Solvin
 
   
 
+
+  
 
   </body>
 </html>
