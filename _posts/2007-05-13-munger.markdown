@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Charlie Munger - 2007 USC Law School Commencement Address"
-date:   2020-12-21 23:16:53
+date:   2007-05-13 23:00:00
 categories: talk
 ---
 
