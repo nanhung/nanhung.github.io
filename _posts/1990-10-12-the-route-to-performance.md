@@ -25,3 +25,5 @@ In convertibles U , we insist that our call on potential appreciation be accompa
 In high yield bonds U , we strive to raise our relative performance by avoiding credit losses, not by reaching for higher (but more uncertain) yields.
 
 In distressed company debt U , we buy only where we believe our cost price is fully covered by asset values. There will always be cases and years in which, when all goes right, those who take on more risk will do better than we do. In the long run, however, I feel strongly that seeking relative performance which is just a little bit above average on a consistent basis -- with protection against poor absolute results in tough times -- will prove more effective than "swinging for the fences."
+
+[Source](https://chian.io/projects/howard-marks/memos/the-route-to-performance)

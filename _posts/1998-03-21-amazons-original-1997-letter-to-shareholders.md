@@ -72,3 +72,4 @@ Jeffrey P. Bezos
 Founder and Chief Executive Officer  
 Amazon.com, Inc.
 
+[SOURCE](https://www.aboutamazon.com/news/company-news/amazons-original-1997-letter-to-shareholders)
