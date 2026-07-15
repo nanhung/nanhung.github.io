@@ -16,9 +16,9 @@ If you want to be in the top 5% of money managers, you have to be willing to be 
 
 We have never had a year below the 47th percentile over that period or, until 1990, above the 27th percentile. As a result, we are in the fourth percentile for the fourteen year period as a whole. I feel strongly that attempting to achieve a superior long term record by stringing together a run of top-decile years is unlikely to succeed. Rather, striving to do a little better than average every year -- and through discipline to have highly superior relative results in bad times -- is:
 	
-	- less likely to produce extreme volatility
-	- less likely to produce huge losses which can't be recouped and, most importantly
-	- more likely to work (given the fact that all of us are only human). Simply put, what the pension fund's record tells me is that, in equities, if you can avoid losers (and losing years), the winners will take care of themselves. I believe most strongly that this holds true in my group's opportunistic niches as well -- that the best foundation for above-average long term performance is an absence of disasters. It is for this reason that a quest for consistency and protection, not single-year greatness, is a common thread underlying all of our investment products:
+ - less likely to produce extreme volatility
+ - less likely to produce huge losses which can't be recouped and, most importantly
+ - more likely to work (given the fact that all of us are only human). Simply put, what the pension fund's record tells me is that, in equities, if you can avoid losers (and losing years), the winners will take care of themselves. I believe most strongly that this holds true in my group's opportunistic niches as well -- that the best foundation for above-average long term performance is an absence of disasters. It is for this reason that a quest for consistency and protection, not single-year greatness, is a common thread underlying all of our investment products:
 
 In convertibles U , we insist that our call on potential appreciation be accompanied by above average resistance to declines.
 
